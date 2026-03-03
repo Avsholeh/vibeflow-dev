@@ -1,0 +1,281 @@
+# Build Feature
+
+You are helping the user build a complete feature in one go — generating sample data, implementing screens, and adding business logic all together.
+
+## Step 1: Check Prerequisites
+
+Check if `specs/roadmap.md` exists.
+
+If it does **not** exist:
+
+"Before building features, we need the product setup in place.
+Please run `/vibeflow:new` first."
+
+Stop here if prerequisites are missing.
+
+---
+
+## Step 2: List Available Features
+
+Read the roadmap and list all available features:
+
+"Which feature would you like to build?
+
+**Available Features:**
+1. **[Feature 1]** (F001) — Priority: P0 | Effort: medium | Status: pending
+2. **[Feature 2]** (F002) — Priority: P1 | Effort: large | Status: pending
+…
+
+Type the feature name or number:"
+
+Wait for user input.
+
+---
+
+## Step 3: Feature Selection & Validation
+
+**If user typed a number:**
+- Map to the corresponding feature from the roadmap
+
+**If user typed a name:**
+- Find matching feature (fuzzy match)
+
+**If no match found:**
+- Show available features again
+- Ask user to select
+
+---
+
+## Step 4: Build Complete Feature
+
+Once feature is selected, build it in phases:
+
+### Phase 1: Generate Sample Data
+
+Generate sample data files for the selected feature:
+- Read `specs/features/[feature_slug]/spec.md`
+- Create `specs/features/[feature_slug]/data.json`
+- Create `specs/features/[feature_slug]/models.md`
+
+### Phase 2: Implement Screens
+
+**⚠️ MANDATORY: Use flutter-ui-design Skill**
+
+Before writing any Flutter UI code, you MUST use the `flutter-ui-design` skill to generate distinctive, production-grade UIs.
+
+**How to use:**
+- Invoke the skill when implementing screens, widgets, or visual components
+- The skill provides design thinking principles and Flutter aesthetics guidelines
+- Follow the skill's guidance for typography, color, motion, and layout
+
+Then create screen widgets:
+- Read feature spec and sample data
+- Use flutter-ui-design skill for UI implementation
+- Generate screen widgets in `lib/features/[feature_slug]/screens/`
+- Generate view wrappers using sample data
+- Generate page wrappers for production
+
+### Phase 3: Implement Logic
+
+Create business logic:
+- Generate domain models in `lib/features/[feature_slug]/domain/models/`
+- Generate repository interfaces in `lib/features/[feature_slug]/domain/repositories/`
+- Generate repository implementations in `lib/features/[feature_slug]/data/repositories/`
+- Generate data sources in `lib/features/[feature_slug]/data/datasources/`
+- Generate providers in `lib/features/[feature_slug]/providers/`
+
+### Phase 4: Update Feature Status
+
+Update `specs/roadmap.md` to mark the feature as `in_progress`:
+- Find the feature's YAML block
+- Update `status: pending` → `status: in_progress`
+- Update `lastUpdated` in frontmatter
+
+---
+
+## Step 5: Summary
+
+Present a comprehensive summary:
+
+"✅ Feature **[Feature Name]** is now complete!
+
+**Generated Files:**
+
+**Spec & Data:**
+- `specs/features/[feature_slug]/spec.md`
+- `specs/features/[feature_slug]/data.json`
+- `specs/features/[feature_slug]/models.md`
+
+**Implementation:**
+- `lib/features/[feature_slug]/domain/models/` — Domain models
+- `lib/features/[feature_slug]/domain/repositories/` — Repository interfaces
+- `lib/features/[feature_slug]/data/repositories/` — Repository implementations
+- `lib/features/[feature_slug]/data/datasources/` — Data sources
+- `lib/features/[feature_slug]/providers/` — State providers
+- `lib/features/[feature_slug]/screens/` — UI screens
+
+**Status Updated:** [Feature Name] is now marked as `in_progress` in the roadmap.
+
+**Next Steps:**
+
+1. **Test the feature:**
+   ```bash
+   flutter run
+   # Navigate to your feature and test the UI and interactions
+   ```
+
+2. **Build another feature:**
+   ```bash
+   /vibeflow:feature
+   # Select the next feature from the list
+   ```
+
+3. **View overall progress:**
+   ```bash
+   /vibeflow:status
+   ```
+
+4. **Plan your next sprint:**
+   ```bash
+   /vibeflow:sprint
+   ```
+
+**Implementation Notes:**
+- Data sources use mock implementations by default — replace with real API/database when ready
+- State management uses the Provider pattern — update `main.dart` if needed
+- Screens use sample data in development — they'll connect to real providers in production"
+
+---
+
+## Important Notes
+
+- **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI
+- **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
+- **Atomic execution:** If any phase fails, report the error and stop — don't partially implement
+- **Feature slug detection:** Use the same slug conversion as other commands (lowercase, hyphens)
+- **Status tracking:** Always update the roadmap status to reflect implementation progress
+- **Dependency awareness:** Check if dependencies are implemented; if not, warn user
+- **File structure:** Follow the exact VibeFlow feature-first architecture
+- **Provider setup:** Ensure main.dart has the feature's provider registered
+- **Immediate writing:** Never show drafts — always write files directly
+
+---
+
+## Dependency Checking
+
+Before building, check the feature's dependencies:
+
+**If feature has dependencies:**
+
+"⚠️ **Dependencies Required:**
+This feature depends on: [Dependency 1], [Dependency 2]
+
+Current status:
+- [Dependency 1]: [status]
+- [Dependency 2]: [status]
+
+**Recommendation:** Build dependencies first for a smoother development experience.
+
+**Options:**
+1. Continue anyway (may have incomplete integration)
+2. Cancel and build dependencies first
+
+Type 1 or 2:"
+
+Wait for user input.
+
+**If 1:** Continue with feature build
+**If 2:** Stop and suggest building dependencies
+
+---
+
+## Feature Slug Conversion
+
+Convert feature names to slugs using these rules:
+- Lowercase everything
+- Replace spaces with hyphens
+- Remove special characters
+- Keep words intact
+
+Examples:
+- "Dashboard" → `dashboard`
+- "User Management" → `user_management`
+
+---
+
+## Definition of Done
+
+A feature is considered complete when all of the following are met:
+
+### Spec & Data (50%)
+- [ ] `specs/features/[slug]/spec.md` exists with complete feature description
+- [ ] `specs/features/[slug]/data.json` exists with realistic sample data
+- [ ] `specs/features/[slug]/models.md` exists with Dart model definitions
+
+### Domain Models (20%)
+- [ ] Domain model classes exist in `lib/features/[slug]/domain/models/`
+- [ ] Models have all required properties and types
+- [ ] Repository interface exists in `lib/features/[slug]/domain/repositories/`
+
+### Business Logic (15%)
+- [ ] Repository implementation exists in `lib/features/[slug]/data/repositories/`
+- [ ] Data source exists (mock, API, or database)
+- [ ] Provider exists with state management (ChangeNotifier)
+- [ ] Provider is registered in `main.dart`
+
+### Screens (10%)
+- [ ] `*_screen.dart` files exist for all screens (props-driven UI)
+- [ ] `*_view.dart` files exist for development (uses data.json)
+- [ ] `*_page.dart` files exist for production (uses Provider)
+- [ ] Screens use flutter-ui-design skill for distinctive UI
+
+### Additional Checks
+- [ ] Code compiles without errors (`flutter analyze` passes)
+- [ ] Hot reload works for development views
+- [ ] Feature status in roadmap updated to `done`
+
+---
+
+## Integration with Existing Commands
+
+This command handles the complete feature implementation:
+1. Sample data generation — Create data.json and models.md
+2. Screen implementation — Generate UI widgets and wrappers
+3. Business logic — Create domain models, repositories, providers
+
+Benefits:
+- Runs all phases in sequence automatically
+- Updates feature status in roadmap
+- Provides unified summary
+- Checks dependencies upfront
+
+---
+
+## Error Handling
+
+**If spec file doesn't exist:**
+"Feature spec not found. Please run `/vibeflow:new` to generate feature specs first."
+
+**If sample data generation fails:**
+"Failed to generate sample data: [error details]
+Please fix the issue and try again."
+
+**If screen implementation fails:**
+"Failed to implement screens: [error details]
+Sample data was generated successfully. You can continue manually."
+
+**If logic implementation fails:**
+"Failed to implement business logic: [error details]
+Screens and sample data were generated successfully. You can continue manually."
+
+---
+
+## Progress Indicators
+
+Show progress during the build:
+
+"Building [Feature Name]...
+[✓] Generating sample data...
+[✓] Implementing screens...
+[✓] Adding business logic...
+[✓] Updating feature status..."

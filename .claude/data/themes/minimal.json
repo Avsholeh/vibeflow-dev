@@ -1,0 +1,20 @@
+{
+  "colors": {
+    "primary": "zinc",
+    "secondary": "stone",
+    "neutral": "neutral",
+    "success": "zinc",
+    "warning": "zinc",
+    "error": "zinc",
+    "info": "zinc",
+    "surface": "white",
+    "background": "white"
+  },
+  "typography": {
+    "heading": "Geist",
+    "body": "Geist",
+    "mono": "Geist Mono"
+  },
+  "preset": "minimal",
+  "description": "Ultra-minimal black and white"
+}

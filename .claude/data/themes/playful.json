@@ -1,0 +1,20 @@
+{
+  "colors": {
+    "primary": "pink",
+    "secondary": "orange",
+    "neutral": "slate",
+    "success": "green",
+    "warning": "yellow",
+    "error": "red",
+    "info": "cyan",
+    "surface": "pink",
+    "background": "rose"
+  },
+  "typography": {
+    "heading": "Fredoka",
+    "body": "Nunito",
+    "mono": "Comic Neue"
+  },
+  "preset": "playful",
+  "description": "Vibrant and friendly colors"
+}

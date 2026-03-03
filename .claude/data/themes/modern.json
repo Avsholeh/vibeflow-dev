@@ -1,0 +1,20 @@
+{
+  "colors": {
+    "primary": "indigo",
+    "secondary": "purple",
+    "neutral": "slate",
+    "success": "emerald",
+    "warning": "amber",
+    "error": "rose",
+    "info": "sky",
+    "surface": "slate",
+    "background": "slate"
+  },
+  "typography": {
+    "heading": "Manrope",
+    "body": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "preset": "modern",
+  "description": "Clean and contemporary with indigo-purple accents"
+}
