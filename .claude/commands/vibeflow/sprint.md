@@ -46,15 +46,6 @@ Options:
 - "All pending features" — Balanced approach
 - "Continue in-progress" — Finish what's started
 
-**Question 3: Team Size** (Optional, default to 1)
-"How many developers are working on this sprint?"
-Options:
-- "1 developer" — Solo development
-- "2 developers" — Small team
-- "3+ developers" — Larger team
-
-Multiply capacity by team size (e.g., 2 weeks × 2 developers = 20 points)
-
 ---
 
 ## Step 4: Parse and Filter Features
@@ -71,10 +62,10 @@ Read the roadmap and extract all features with their metadata:
 - Phase
 
 **Convert effort to points:**
-- `small` → 1 point (1-2 days)
-- `medium` → 3 points (3-5 days)
-- `large` → 5 points (1-2 weeks)
-- `xlarge` → 8 points (2-4 weeks)
+- `small` → 1 point
+- `medium` → 3 points
+- `large` → 5 points
+- `xlarge` → 8 points
 
 **Filter features based on focus area:**
 - P0 only → `priority === "P0"`
@@ -141,7 +132,7 @@ Starting with the highest priority features from the sorted list:
 Format the sprint plan with the following structure:
 
 ```markdown
-# [Duration] Sprint Plan ([Team Size] dev × [Weeks] weeks = [Points] points)
+# [Duration] Sprint Plan ([Capacity] points)
 
 ## Sprint Goals
 [Summary based on focus area: "Complete P0 features for MVP Foundation"]
@@ -191,7 +182,6 @@ Format the sprint plan with the following structure:
 ## Sprint Notes
 - **Start Date:** [Today's date]
 - **Target End Date:** [Calculated based on duration]
-- **Velocity:** [Points] per sprint
 - **Focus:** [Focus area description]
 ```
 
@@ -206,7 +196,7 @@ Display the sprint plan and provide next steps:
 **Sprint Summary:**
 - [X] features selected ([Y] points)
 - [Z] features blocked (dependencies)
-- Capacity: [A] points / [B] available
+- Capacity: [Y] points / [capacity] available
 
 **Priority Features:**
 1. [Feature 1] — [Deliverables]
@@ -219,7 +209,7 @@ Display the sprint plan and provide next steps:
 
 Would you like me to:
 1. Save this sprint plan to `specs/sprints/sprint-[N].md`
-2. Adjust the sprint parameters (duration, focus, team size)
+2. Adjust the sprint parameters (duration, focus)
 3. Start implementing the first feature
 
 **Tip:** Run `/vibeflow:status` anytime to track progress through the sprint."
@@ -229,16 +219,16 @@ Would you like me to:
 ## Important Notes
 
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
-- **Effort estimation:** Use roadmap values or default to medium (3 points)
-- **Capacity calculation:** 1 week = 6 points, 2 weeks = 10 points, 1 month = 20 points (per developer)
+- **Effort estimation:** Use roadmap values or default to medium (3 points) — see CLAUDE.md
+- **Capacity calculation:** 1 week = 6 points, 2 weeks = 10 points, 1 month = 20 points
 - **Dependency resolution:** Always respect dependencies — a feature cannot be started before its dependencies are done
-- **Priority ordering:** P0 > P1 > P2 within same dependency level
-- **Team capacity:** Multiply base capacity by number of developers
+- **Priority ordering:** P0 > P1 > P2 within same dependency level — see CLAUDE.md
 - **Status awareness:** Skip features already marked as "done" in roadmap
 - **Blocked features:** Clearly explain why each feature is blocked (missing dependency or capacity)
 - **Acceptance criteria:** Provide concrete "done" definition for each feature
 - **Backward compatible:** Works with legacy roadmaps (using default effort values)
 - **Interactive questions:** Use `AskUserQuestion` with clear options for each parameter
+- **Reference:** All specification formats are in CLAUDE.md
 
 ---
 
@@ -247,7 +237,6 @@ Would you like me to:
 **Input:**
 - `features`: Array of feature objects with metadata
 - `duration`: Sprint duration in weeks
-- `teamSize`: Number of developers
 - `focus`: Filter criteria (priority, phase, status)
 
 **Output:**
@@ -257,7 +246,7 @@ Would you like me to:
 
 **Pseudocode:**
 ```
-capacity = calculate_capacity(duration, teamSize)
+capacity = calculate_capacity(duration)
 filtered = filter_features(features, focus)
 sorted = topological_sort(filtered)  # Resolve dependencies
 selected = []
@@ -296,7 +285,7 @@ return selected, blocked, deferred
 
 **No features fit:**
 - Show "Smallest feature ([X] points) exceeds capacity ([Y] points)"
-- Suggest increasing duration or reducing team size
+- Suggest increasing duration
 
 **Empty roadmap:**
 - Show "No features found in roadmap."

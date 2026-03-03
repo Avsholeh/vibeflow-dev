@@ -146,9 +146,11 @@ Would you like details on any specific feature, or help with the next implementa
 - **Phase grouping:** Group features by phase if defined in roadmap
 - **Priority focus:** Highlight P0 features that need attention
 - **Actionable next steps:** Always provide concrete next actions based on current state
-- **Slug conversion:** Be careful with special characters when converting feature names to slugs
+- **Slug conversion:** Be careful with special characters when converting feature names to slugs — see CLAUDE.md
 - **Non-existent lib/features/:** If implementation directory doesn't exist at all, all implementation checks return false
 - **Partial implementation:** Use `[~]` indicator when some files exist but not all in a category
+- **Progress calculation:** See CLAUDE.md for detailed progress calculation formula
+- **Reference:** All specification formats are in CLAUDE.md
 
 ---
 

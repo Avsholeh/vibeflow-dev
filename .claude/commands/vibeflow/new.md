@@ -233,24 +233,20 @@ Create `specs/overview.md` with:
 
 ---
 
-## Step 4: Design System Selection
+## Step 4: Design System Research & Generation
 
-"Your app structure is ready! Choose a visual theme:
+"Your app structure is ready! Let's set up your design system.
 
-1. **modern** (recommended) — Clean indigo/purple, Inter font
-2. **minimal** — Black/white, Geist font
-3. **playful** — Colorful, rounded, Nunito font
-4. **professional** — Blue/gray, SF Pro font
-5. **nature** — Greens, earth tones, organic
-6. **bold** — High contrast, strong colors
-7. **Skip for now** — Decide later
+I'll analyze your app type and target users to research and recommend theme options."
 
-Type a number (1-7):"
+Use `/vibeflow:theme` command to research and generate your design system.
 
-Wait for user input.
+Would you like to:
+1. "Generate design system now" — Run `/vibeflow:theme`
+2. "Skip for now" — You can run `/vibeflow:theme` later
 
-**If 1-6:** Generate design system files with preset (use `/vibeflow:theme` preset definitions)
-**If 7:** Skip design system
+**If 1:** Run the theme command workflow
+**If 2:** Continue to final summary
 
 ---
 
@@ -261,7 +257,7 @@ Present a comprehensive summary:
 "✅ Your [App Name] app is ready!
 
 **📱 App:** [App Name]
-**🎨 Design:** [Preset name / Not set]
+**🎨 Design:** [Theme selected / Not set]
 **📋 Features:** [N] features defined
 **📁 Structure:** Feature-first architecture ready
 
@@ -274,22 +270,28 @@ Present a comprehensive summary:
 
 **Next Steps:**
 
-1. **Track progress:**
+1. **Set up your design system:**
+   ```bash
+   /vibeflow:theme
+   ```
+
+2. **Track progress:**
    ```bash
    /vibeflow:status
    ```
 
-2. **Plan your sprint:**
+3. **Plan your sprint:**
    ```bash
    /vibeflow:sprint
    ```
 
-3. **Build features:** Use `/vibeflow:feature` to implement
+4. **Build features:** Use `/vibeflow:feature` to implement
 
 **Quick Reference:**
+- Set up design: `/vibeflow:theme`
 - View all features: `/vibeflow:status`
 - Generate sprint plan: `/vibeflow:sprint`
-- Change design: `/vibeflow:theme --preset [name]`
+- Build a feature: `/vibeflow:feature`
 
 You're all set! Start building your first feature."
 
@@ -311,6 +313,20 @@ Use these patterns to infer features from app descriptions:
 | "finance", "money", "budget" | Dashboard, Add Transaction, Categories, Reports, History |
 | "fitness", "health", "workout" | Dashboard, Log Workout, Exercises, Progress, Goals |
 | "learn", "education", "course" | Course List, Lesson View, Progress, Quizzes |
+| "chat", "message", "conversation" | Chat List, Conversation View, Message Input, Media Sharing, Notifications |
+| "travel", "booking", "reservation" | Search, Booking Flow, Trip Details, Confirmation, Itinerary |
+| "food", "delivery", "restaurant" | Restaurant List, Menu View, Cart, Order Tracking, Reviews |
+| "property", "real estate", "rent" | Property Search, Listing Details, Favorites, Contact Agent, Map View |
+| "event", "ticket", "concert" | Event Discovery, Event Details, Ticket Purchase, Calendar Integration, QR Tickets |
+| "weather", "forecast", "temperature" | Current Weather, Forecast View, Location Search, Alerts, Settings |
+| "music", "audio", "playlist" | Library, Player Controls, Playlist Management, Search, Downloads |
+| "map", "navigation", "direction" | Map View, Route Planning, Location Search, Turn-by-Turn, Saved Places |
+| "sell", "marketplace", "listing" | Product Feed, Seller Dashboard, Messaging, Reviews, Wallet |
+| "doctor", "medical", "appointment" | Appointment Booking, Doctor Search, Medical Records, Prescriptions, Video Consult |
+| "game", "quiz", "trivia" | Game Lobby, Gameplay, Score Tracking, Leaderboards, Achievements |
+| "news", "article", "content" | Article Feed, Categories, Bookmarks, Sharing, Notifications |
+| "portfolio", "showcase", "gallery" | Project Gallery, Project Details, About Section, Contact, Categories |
+| "survey", "form", "questionnaire" | Form Builder, Survey List, Response Collection, Analytics, Export |
 
 ---
 
@@ -318,23 +334,10 @@ Use these patterns to infer features from app descriptions:
 
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Immediate file writing:** Never show drafts, always write directly
-- **Spec structure:** Always use exact spec structure for consistency
+- **Spec structure:** Always use exact spec structure for consistency (see CLAUDE.md)
 - **Inference over questioning:** For custom apps, extract info from user input, don't ask everything
 - **App name required:** Always ask for app name to personalize
-- **Theme optional:** Don't block on theme selection, can do later
+- **Theme system:** Use `/vibeflow:theme` for research-based theme recommendations
 - **Progress tracking:** Mention `/vibeflow:status` in summary
 - **First feature:** Always suggest which feature to start with
-- **Design presets:** Reference `/vibeflow:theme` for preset definitions
-
----
-
-## Design Presets Reference
-
-Design presets are defined in `/vibeflow:theme`. Available presets:
-
-- **modern** — Clean, indigo/purple, Manrope/Inter/JetBrains Mono
-- **minimal** — Black/white, zinc, Geist
-- **playful** — Colorful, pink/orange, Fredoka/Nunito
-- **professional** — Blue/gray, SF Pro
-- **nature** — Greens, earth tones, Nunito/Open Sans
-- **bold** — High contrast, violet/fuchsia, Space Grotesk
+- **Reference:** All specification formats are in CLAUDE.md

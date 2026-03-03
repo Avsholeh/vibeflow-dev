@@ -149,15 +149,16 @@ Present a comprehensive summary:
 
 ## Important Notes
 
-- **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI
+- **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI (see CLAUDE.md)
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Atomic execution:** If any phase fails, report the error and stop — don't partially implement
-- **Feature slug detection:** Use the same slug conversion as other commands (lowercase, hyphens)
+- **Feature slug detection:** Use the same slug conversion as other commands (lowercase, hyphens) — see CLAUDE.md
 - **Status tracking:** Always update the roadmap status to reflect implementation progress
 - **Dependency awareness:** Check if dependencies are implemented; if not, warn user
-- **File structure:** Follow the exact VibeFlow feature-first architecture
-- **Provider setup:** Ensure main.dart has the feature's provider registered
+- **File structure:** Follow the exact VibeFlow feature-first architecture — see CLAUDE.md
+- **Provider setup:** Ensure main.dart has the feature's provider registered — see Provider template in CLAUDE.md
 - **Immediate writing:** Never show drafts — always write files directly
+- **Reference:** All specification formats are in CLAUDE.md
 
 ---
 

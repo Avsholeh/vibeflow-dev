@@ -1,6 +1,6 @@
-# Theme Presets
+# Theme Research & Design System
 
-You are helping the user quickly set up a design system for their Flutter app using preset themes or custom configuration.
+You are helping the user set up a design system for their Flutter app using research-based theme recommendations and Material 3 format.
 
 ## Step 1: Check Current State
 
@@ -13,8 +13,8 @@ Check if `specs/design-system/colors.json` or `specs/design-system/typography.js
 - Typography: [yes/no]
 
 **Options:**
-1. Replace with preset theme (overwrites existing)
-2. Keep existing, choose different preset
+1. Replace with new research-based theme (overwrites existing)
+2. Keep existing, research new options
 3. Cancel and keep current setup"
 
 Wait for user choice.
@@ -25,136 +25,155 @@ Proceed to Step 2.
 
 ---
 
-## Step 2: Check for Preset Flag
+## Step 2: Analyze App Context
 
-Check if user specified a preset via flag:
+Read the following files to understand the app context:
+- `specs/overview.md` — App description, target users, problems, solutions
+- `specs/roadmap.md` — Features and functionality
 
-```
-/vibeflow:theme --preset [name]
-```
-
-**If preset flag provided:**
-- Skip interactive selection
-- Use the specified preset directly
-- Proceed to Step 4
-
-**If no preset flag:**
-- Proceed to Step 3 for interactive selection
+**Extract:**
+- App type (SaaS, consumer, internal tool, game, etc.)
+- Target audience (age, industry, region, technical proficiency)
+- Key features (what users will do most often)
+- Brand considerations (existing brand, new brand, personality)
 
 ---
 
-## Step 3: Interactive Selection (if no preset flag)
+## Step 3: Research & Present Options
 
-Present preset options:
+Based on the app analysis, research and present 3-4 theme options with explanations.
 
-"Choose a theme preset for your app:
+**Research considerations:**
+1. **Industry standards** — What colors and fonts are commonly used for this app type?
+2. **Accessibility** — WCAG AA/AAA compliance, color contrast ratios
+3. **Psychology of color** — What emotions do different colors evoke?
+4. **Use patterns** — Dark mode usage, screen time expectations
+5. **Platform conventions** — Material Design, iOS patterns
 
-| Preset | Style | Best For |
-|--------|-------|----------|
-| **modern** | Clean, indigo/purple, Inter font | Most apps, SaaS, productivity |
-| **minimal** | Black/white, Geist font | Content-focused, readers, tools |
-| **playful** | Colorful, rounded, Nunito font | Kids apps, games, social |
-| **professional** | Blue/gray, SF Pro font | Business, finance, enterprise |
-| **nature** | Green/earth tones, organic | Health, wellness, sustainability |
-| **bold** | High contrast, strong colors | Brands with strong identity |
+**Present options using AskUserQuestion:**
 
-Type a preset name to select it:"
+```
+Based on your [app type] for [target users], here are researched theme options:
 
-Wait for user input.
+**Option 1: [Name]**
+- Colors: [palette description]
+- Typography: [font choices]
+- Research: [why this works for this app type]
+- Best for: [use cases]
 
-**If user types a valid preset name:**
-- Valid presets are: `modern`, `minimal`, `playful`, `professional`, `nature`, `bold`
-- Use that preset
-- Proceed to Step 4
+**Option 2: [Name]**
+- Colors: [palette description]
+- Typography: [font choices]
+- Research: [why this works for this app type]
+- Best for: [use cases]
 
-**If user types an invalid preset name:**
-- Show error: "Invalid preset name. Valid options: modern, minimal, playful, professional, nature, bold"
-- Show available presets list with descriptions
-- Ask user to type again
-- Suggest using `/vibeflow:theme --help` to see all options
+**Option 3: [Name]**
+- Colors: [palette description]
+- Typography: [font choices]
+- Research: [why this works for this app type]
+- Best for: [use cases]
+```
 
-**Note:** After selecting a preset, you can manually edit `specs/design-system/colors.json` and `specs/design-system/typography.json` to customize colors and fonts.
+**Example presentation for a finance app:**
+
+```
+Based on your finance app for tracking daily expenses, here are researched theme options:
+
+**Option 1: Professional Trust**
+- Colors: Blue/Gray palette (proven to build trust in finance apps)
+- Typography: Inter / SF Pro (industry standard for readability)
+- Research: 78% of banking apps use blue as primary color; blue conveys trust and stability
+- Best for: Trust-sensitive applications, professional users
+
+**Option 2: Modern Clarity**
+- Colors: Indigo/Purple with clean neutrals (distinctive, memorable)
+- Typography: Manrope headings, Inter body (geometric, friendly)
+- Research: SaaS trend toward distinct branding while maintaining clarity
+- Best for: Users who interact daily, want personality without sacrificing clarity
+
+**Option 3: Calm Focus**
+- Colors: Green/Emerald with warm neutrals (reduces financial anxiety)
+- Typography: Nunito / Open Sans (friendly, approachable)
+- Research: Green reduces cognitive load and anxiety in task apps; warm tones feel less clinical
+- Best for: Wellness-focused finance, users who find money management stressful
+```
+
+Wait for user selection.
 
 ---
 
 ## Step 4: Generate Design System
 
-**Immediately create** `specs/design-system/colors.json` and `specs/design-system/typography.json` based on the preset.
+**Immediately create** all design system files based on selected option:
 
-**Read preset data from** `.claude/data/themes/[preset].json` and create the spec files.
+### 4.1: Create design-system.md
 
-**Available Presets:**
+```markdown
+# Design System — [App Name]
 
-| Preset | Colors | Typography | Description |
-|--------|--------|------------|-------------|
-| `modern` | indigo, purple, slate | Manrope, Inter, JetBrains Mono | Clean and contemporary |
-| `minimal` | zinc, stone, neutral | Geist (all variants) | Ultra-minimal black and white |
-| `playful` | pink, orange, slate | Fredoka, Nunito, Comic Neue | Vibrant and friendly |
-| `professional` | blue, cyan, gray | SF Pro Display, SF Pro Text, SF Mono | Business-ready |
-| `nature` | emerald, lime, stone | Nunito, Open Sans, IBM Plex Mono | Earthy and natural |
-| `bold` | violet, fuchsia, slate | Space Grotesk, Plus Jakarta Sans, Fira Code | High contrast |
+## Aesthetic
+[Visual style description - 2-3 sentences]
+
+## Color Philosophy
+[How colors are used - e.g., "Subtle borders, purposeful accents for CTAs"]
+
+## Typography Philosophy
+[Font choices and readability - e.g., "Geometric sans for headings, readable sans for body"]
+
+## Component Patterns
+[Key UI patterns - e.g., "Cards with subtle borders", "Rounded buttons"]
+
+## Motion & Interaction
+[Animation patterns - e.g., "Micro-interactions on hover", "Smooth page transitions"]
+```
+
+### 4.2: Create colors.json
+
+**Must follow Material 3 format** (see CLAUDE.md for complete format).
+
+Include:
+- `light` — All Material 3 color roles (primary, secondary, tertiary, error, background, surface, etc.)
+- `dark` — Complete dark mode variants
+- `semantic` — success, warning, info colors
+- `custom` — Border, filled, subtle colors
+
+**Color format:** Use hex codes (`#3B82F6`), not color names.
+
+### 4.3: Create typography.json
+
+**Must follow Material 3 format** (see CLAUDE.md for complete format).
+
+Include:
+- `fontFamilies` — primary, secondary, tertiary
+- `textStyles` — All Material 3 text styles (displayLarge, headlineLarge, titleLarge, bodyLarge, labelLarge, etc.)
+- `custom` — overline, caption, mono, button
+- `weights` — All font weight mappings
+- `sizes` — Font size scale
 
 ---
 
 ## Step 5: Confirm with User
 
-After creating the files, reply:
+After creating the files, confirm:
 
-"I've set up your design system with the **[preset name]** preset:
+"I've set up your design system:
 
+**Theme:** [Option name]
 **Colors:** [primary], [secondary], [neutral] base
 **Typography:** [heading] (headings), [body] (body), [mono] (code)
 
 Files created:
-- `specs/design-system/colors.json`
-- `specs/design-system/typography.json`
+- `specs/design-system/design-system.md` — Design principles
+- `specs/design-system/colors.json` — Material 3 color tokens
+- `specs/design-system/typography.json` — Material 3 text styles
 
 You can:
-- Change preset: `/vibeflow:theme --preset [name]`
 - Manually edit the design system files to customize
+- Run `/vibeflow:theme` again to choose different options
 
 **What's next:**
-- `/vibeflow:new` — Start your app
-- `/vibeflow:feature` — Build your first feature"
-
----
-
-## Color Palette Reference
-
-All presets use Tailwind-inspired color names. Full palette:
-
-| Primary Options | Secondary Options | Neutral Options |
-|-----------------|-------------------|-----------------|
-| indigo | purple | slate |
-| blue | cyan | gray |
-| sky | teal | zinc |
-| violet | fuchsia | stone |
-| purple | pink | neutral |
-| pink | rose | |
-| red | orange | |
-| orange | amber | |
-| amber | yellow | |
-| yellow | lime | |
-| lime | green | |
-| green | emerald | |
-| emerald | teal | |
-| teal | cyan | |
-| cyan | sky | |
-
----
-
-## Font Reference
-
-All presets use Google Fonts (except SF Pro variants). Available fonts:
-
-**Headings:**
-- Manrope, Inter, Geist, SF Pro Display, Fredoka, Nunito, Space Grotesk, Plus Jakarta Sans, Outfit, Montserrat
-
-**Body:**
-- Inter, Geist, SF Pro Text, Nunito, Open Sans, Plus Jakarta Sans, Inter, DM Sans, work Sans
-
-**Mono:**
-- JetBrains Mono, Geist Mono, Comic Neue, SF Mono, IBM Plex Mono, Fira Code, JetBrains Mono
+- `/vibeflow:feature` — Build your first feature
+- `/vibeflow:status` — Check your progress"
 
 ---
 
@@ -162,25 +181,33 @@ All presets use Google Fonts (except SF Pro variants). Available fonts:
 
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Immediate file writing:** Always create files directly, no drafts
-- **Presets are starting points:** Users can customize after selecting a preset
-- **Backward compatible:** Existing custom colors/typography are preserved unless user chooses to replace
-- **Google Fonts:** Most presets use Google Fonts (free, easy integration)
-- **SF Pro:** Requires Apple devices or licensing; suggest alternatives for cross-platform
-- **Preset flag:** Allows non-interactive usage for scripting/power users
-- **Help command:** `/vibeflow:theme --help` shows all presets
-- **Data files:** Preset definitions are stored in `.claude/data/themes/[preset].json`
+- **Research-based:** Theme options should be grounded in industry research, not arbitrary choices
+- **Material 3 format:** Always use complete Material 3 format for colors.json and typography.json (see CLAUDE.md)
+- **Accessibility:** Ensure WCAG AA compliance for color contrast (4.5:1 for normal text, 3:1 for large text)
+- **Google Fonts:** Recommend Google Fonts for easy integration (free, reliable)
+- **Customizable:** Users can manually edit generated files after creation
+- **Reference:** See CLAUDE.md for complete Material 3 format specifications
 
 ---
 
-## Examples
+## Research Reference
 
-```bash
-# Interactive selection
-/vibeflow:theme
+**Color Psychology:**
+- Blue — Trust, stability, professionalism (finance, healthcare, enterprise)
+- Green — Growth, health, calm (wellness, productivity, environmental)
+- Purple — Creativity, luxury, wisdom (creative tools, premium apps)
+- Orange — Energy, friendliness, enthusiasm (social, fitness, food)
+- Red — Urgency, passion, excitement (alerts, notifications, entertainment)
 
-# Direct preset selection
-/vibeflow:theme --preset modern
+**Typography Categories:**
+- Geometric Sans — Modern, clean, scalable (Inter, Manrope, SF Pro)
+- Humanist Sans — Friendly, approachable (Nunito, Open Sans, DM Sans)
+- Grotesque Sans — Bold, distinctive (Space Grotesk, Plus Jakarta Sans)
+- Mono — Technical, precise (JetBrains Mono, Fira Code, IBM Plex Mono)
 
-# View available presets
-/vibeflow:theme --help
-```
+**Industry Patterns:**
+- Finance — Blue, gray, conservative fonts
+- Health/SaaS — Green, blue, clean sans-serif
+- Social — Vibrant colors, friendly fonts
+- Entertainment — Bold colors, expressive typography
+- Productivity — Calm colors, highly readable fonts
