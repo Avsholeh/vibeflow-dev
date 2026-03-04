@@ -4,7 +4,7 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 
 ---
 
-## Quick Start — Build in 4 Commands
+## Quick Start — Build in 5 Commands
 
 **New to VibeFlow?** This is all you need:
 
@@ -26,11 +26,20 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 # → Full Material 3 design system generated
 ```
 
-### Step 3: Build Features
+### Step 3: Plan Sprints
+
+```bash
+/vibeflow:sprint
+# → Select sprint duration and focus area
+# → AI resolves dependencies and selects features that fit capacity
+# → Sprint plan generated
+```
+
+### Step 4: Build Features
 
 ```bash
 /vibeflow:feature
-# → Select feature from list
+# → Select feature from sprint plan
 # → Automatically generates:
 #    ✓ Sample data
 #    ✓ Screens (using flutter-ui-design skill)
@@ -38,19 +47,21 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 #    ✓ State management
 ```
 
-### Step 4: Track Progress
+### Step 5: Track Progress
 
 ```bash
-/vibeflow:status         # View progress
-/vibeflow:sprint         # Plan sprints
+/vibeflow:status
+# → View implementation progress across all features
+# → See what's done, in progress, and pending
 ```
 
-**That's it!** 4 commands to build a complete Flutter app.
+**That's it!** 5 commands to build a complete Flutter app.
 
 | What | Command |
 |-------|----------|
 | Start | `/vibeflow:new` |
 | Style | `/vibeflow:theme` |
+| Plan | `/vibeflow:sprint` |
 | Build | `/vibeflow:feature` |
 | Track | `/vibeflow:status` |
 
@@ -369,7 +380,7 @@ A classification for organizing related tasks together.
 
 ### Design System Format
 
-#### Design System Spec (`specs/design-system/design-system.md`)
+#### Design System Spec (`specs/design_system/design_system.md`)
 
 ```markdown
 # Design System — [App Name]
@@ -390,7 +401,7 @@ A classification for organizing related tasks together.
 [Animation and interaction patterns - e.g., "Micro-interactions on hover", "Smooth page transitions"]
 ```
 
-#### Colors JSON (`specs/design-system/colors.json`)
+#### Colors JSON (`specs/design_system/colors.json`)
 
 **Must follow Material 3 format:**
 
@@ -483,7 +494,7 @@ A classification for organizing related tasks together.
 }
 ```
 
-#### Typography JSON (`specs/design-system/typography.json`)
+#### Typography JSON (`specs/design_system/typography.json`)
 
 **Must follow Material 3 format:**
 
@@ -599,9 +610,9 @@ A classification for organizing related tasks together.
 specs/
 ├── overview.md                    # Product overview
 ├── roadmap.md                     # Feature roadmap
-├── data-shape.md                  # Data models & relationships
-├── design-system/
-│   ├── design-system.md          # Design aesthetic & principles
+├── data_shape.md                  # Data models & relationships
+├── design_system/
+│   ├── design_system.md          # Design aesthetic & principles
 │   ├── colors.json                # Color tokens for light/dark modes
 │   └── typography.json            # Typography definitions
 └── features/
@@ -744,7 +755,7 @@ Create a new Flutter app with complete specification files.
 **What it does:**
 1. Checks for existing spec files (prompts to overwrite/keep/cancel if found)
 2. Gathers app information (name, description, problems, users, features)
-3. Generates spec files (overview.md, roadmap.md, data-shape.md, feature specs)
+3. Generates spec files (overview.md, roadmap.md, data_shape.md, feature specs)
 4. Optionally generates design system files
 
 **Generated files:**
@@ -752,7 +763,7 @@ Create a new Flutter app with complete specification files.
 specs/
 ├── overview.md
 ├── roadmap.md
-├── data-shape.md
+├── data_shape.md
 └── features/
     └── [feature_name]/
         └── spec.md
@@ -777,8 +788,8 @@ Set up design system with research-based theme recommendations.
 
 **Generated files:**
 ```
-specs/design-system/
-├── design-system.md
+specs/design_system/
+├── design_system.md
 ├── colors.json
 └── typography.json
 ```

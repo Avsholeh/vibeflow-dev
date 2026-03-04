@@ -17,6 +17,29 @@ Stop here if prerequisites are missing.
 
 ## Step 2: List Available Features
 
+First, check if sprint plan files exist in `/specs/sprints/`.
+
+**If sprint plans exist:**
+1. Find the latest sprint plan (highest N in `sprint_[N].md`)
+2. Read the sprint plan file
+3. Extract selected features from the "Selected Features" section
+4. Display features from the sprint plan in implementation order
+
+"If you have an active sprint plan, I'll show features from your latest sprint.
+
+**Sprint Plan: [Sprint Name]**
+**Capacity:** [X] points | **Focus:** [Focus area]
+
+**Features for this sprint:**
+1. **[Feature 1]** (F001) — Priority: P0 | Effort: medium | Status: pending
+2. **[Feature 2]** (F002) — Priority: P0 | Effort: large | Status: pending
+…
+
+Type the feature name or number to build, or 'all' to see roadmap features:"
+
+Wait for user input.
+
+**If user types 'all' or no sprint plans exist:**
 Read the roadmap and list all available features:
 
 "Which feature would you like to build?
@@ -50,14 +73,21 @@ Wait for user input.
 
 Once feature is selected, build it in phases:
 
-### Phase 1: Generate Sample Data
+### Phase 1: Update Feature Status
+
+Update `specs/roadmap.md` to mark the feature as `in_progress`:
+- Find the feature's YAML block
+- Update `status: pending` → `status: in_progress`
+- Update `lastUpdated` in frontmatter
+
+### Phase 2: Generate Sample Data
 
 Generate sample data files for the selected feature:
 - Read `specs/features/[feature_slug]/spec.md`
 - Create `specs/features/[feature_slug]/data.json`
 - Create `specs/features/[feature_slug]/models.md`
 
-### Phase 2: Implement Screens
+### Phase 3: Implement Screens
 
 **⚠️ MANDATORY: Use flutter-ui-design Skill**
 
@@ -75,7 +105,7 @@ Then create screen widgets:
 - Generate view wrappers using sample data
 - Generate page wrappers for production
 
-### Phase 3: Implement Logic
+### Phase 4: Implement Logic
 
 Create business logic:
 - Generate domain models in `lib/features/[feature_slug]/domain/models/`
@@ -84,11 +114,11 @@ Create business logic:
 - Generate data sources in `lib/features/[feature_slug]/data/datasources/`
 - Generate providers in `lib/features/[feature_slug]/providers/`
 
-### Phase 4: Update Feature Status
+### Phase 5: Update Feature Status
 
-Update `specs/roadmap.md` to mark the feature as `in_progress`:
+Update `specs/roadmap.md` to mark the feature as `done`:
 - Find the feature's YAML block
-- Update `status: pending` → `status: in_progress`
+- Update `status: in_progress` → `status: done`
 - Update `lastUpdated` in frontmatter
 
 ---
@@ -124,20 +154,20 @@ Present a comprehensive summary:
    # Navigate to your feature and test the UI and interactions
    ```
 
-2. **Build another feature:**
-   ```bash
-   /vibeflow:feature
-   # Select the next feature from the list
-   ```
-
-3. **View overall progress:**
+2. **View overall progress:**
    ```bash
    /vibeflow:status
    ```
 
-4. **Plan your next sprint:**
+3. **Plan your next sprint:**
    ```bash
    /vibeflow:sprint
+   ```
+
+4. **Build another feature:**
+   ```bash
+   /vibeflow:feature
+   # Select the next feature from the sprint plan
    ```
 
 **Implementation Notes:**
@@ -149,6 +179,9 @@ Present a comprehensive summary:
 
 ## Important Notes
 
+- **Sprint plan integration:** When sprint plans exist in `/specs/sprints/`, prioritize showing features from the latest sprint plan. Users can type 'all' to see all roadmap features
+- **Sprint plan parsing:** Read sprint plan files to extract "Selected Features" section with feature names, IDs, priorities, efforts, and implementation order
+- **Roadmap fallback:** If no sprint plans exist or user types 'all', fall back to showing all features from the roadmap
 - **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI (see CLAUDE.md)
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Atomic execution:** If any phase fails, report the error and stop — don't partially implement
@@ -209,17 +242,17 @@ Examples:
 A feature is considered complete when all of the following are met:
 
 ### Spec & Data (50%)
-- [ ] `specs/features/[slug]/spec.md` exists with complete feature description
-- [ ] `specs/features/[slug]/data.json` exists with realistic sample data
-- [ ] `specs/features/[slug]/models.md` exists with Dart model definitions
+- [ ] `specs/features/[feature_slug]/spec.md` exists with complete feature description
+- [ ] `specs/features/[feature_slug]/data.json` exists with realistic sample data
+- [ ] `specs/features/[feature_slug]/models.md` exists with Dart model definitions
 
 ### Domain Models (20%)
-- [ ] Domain model classes exist in `lib/features/[slug]/domain/models/`
+- [ ] Domain model classes exist in `lib/features/[feature_slug]/domain/models/`
 - [ ] Models have all required properties and types
-- [ ] Repository interface exists in `lib/features/[slug]/domain/repositories/`
+- [ ] Repository interface exists in `lib/features/[feature_slug]/domain/repositories/`
 
 ### Business Logic (15%)
-- [ ] Repository implementation exists in `lib/features/[slug]/data/repositories/`
+- [ ] Repository implementation exists in `lib/features/[feature_slug]/data/repositories/`
 - [ ] Data source exists (mock, API, or database)
 - [ ] Provider exists with state management (ChangeNotifier)
 - [ ] Provider is registered in `main.dart`

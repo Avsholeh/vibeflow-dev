@@ -96,7 +96,7 @@ Check `specs/roadmap.md`:
 
 ## Step 4: Validate Data Shape
 
-Check `specs/data-shape.md`:
+Check `specs/data_shape.md`:
 
 **Required sections:**
 - ## Entities section
@@ -122,8 +122,8 @@ Check `specs/data-shape.md`:
 Check if design system files exist:
 
 **Required files:**
-- `specs/design-system/colors.json`
-- `specs/design-system/typography.json`
+- `specs/design_system/colors.json`
+- `specs/design_system/typography.json`
 
 **Validation checks for colors.json:**
 - Valid JSON format

@@ -4,7 +4,7 @@ You are helping the user set up a design system for their Flutter app using rese
 
 ## Step 1: Check Current State
 
-Check if `specs/design-system/colors.json` or `specs/design-system/typography.json` exists.
+Check if `specs/design_system/colors.json` or `specs/design_system/typography.json` exists.
 
 **If design system already exists:**
 
@@ -106,7 +106,7 @@ Wait for user selection.
 
 **Immediately create** all design system files based on selected option:
 
-### 4.1: Create design-system.md
+### 4.1: Create design_system.md
 
 ```markdown
 # Design System — [App Name]
@@ -163,16 +163,17 @@ After creating the files, confirm:
 **Typography:** [heading] (headings), [body] (body), [mono] (code)
 
 Files created:
-- `specs/design-system/design-system.md` — Design principles
-- `specs/design-system/colors.json` — Material 3 color tokens
-- `specs/design-system/typography.json` — Material 3 text styles
+- `specs/design_system/design_system.md` — Design principles
+- `specs/design_system/colors.json` — Material 3 color tokens
+- `specs/design_system/typography.json` — Material 3 text styles
 
 You can:
 - Manually edit the design system files to customize
 - Run `/vibeflow:theme` again to choose different options
 
 **What's next:**
-- `/vibeflow:feature` — Build your first feature
+- `/vibeflow:sprint` — Plan your first sprint
+- `/vibeflow:feature` — Build features from your sprint plan
 - `/vibeflow:status` — Check your progress"
 
 ---

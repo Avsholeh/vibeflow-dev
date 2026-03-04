@@ -160,7 +160,7 @@ Create `specs/overview.md` with:
 
 ### 3.3: Data Shape
 
-**Immediately create** `specs/data-shape.md`:
+**Immediately create** `specs/data_shape.md`:
 
 **Infer entities from:**
 - Feature descriptions in roadmap
@@ -264,9 +264,9 @@ Present a comprehensive summary:
 **Generated Files:**
 - `specs/overview.md` — Product vision
 - `specs/roadmap.md` — Feature roadmap with metadata
-- `specs/data-shape.md` — Data entities
+- `specs/data_shape.md` — Data entities
 - `specs/features/*/spec.md` — [N] feature specifications
-- `specs/design-system/*` — Design tokens (if theme selected)
+- `specs/design_system/*` — Design tokens (if theme selected)
 
 **Next Steps:**
 
@@ -275,23 +275,26 @@ Present a comprehensive summary:
    /vibeflow:theme
    ```
 
-2. **Track progress:**
-   ```bash
-   /vibeflow:status
-   ```
-
-3. **Plan your sprint:**
+2. **Plan your sprint:**
    ```bash
    /vibeflow:sprint
    ```
 
-4. **Build features:** Use `/vibeflow:feature` to implement
+3. **Build features:**
+   ```bash
+   /vibeflow:feature
+   ```
+
+4. **Track progress:**
+   ```bash
+   /vibeflow:status
+   ```
 
 **Quick Reference:**
 - Set up design: `/vibeflow:theme`
-- View all features: `/vibeflow:status`
-- Generate sprint plan: `/vibeflow:sprint`
-- Build a feature: `/vibeflow:feature`
+- Plan sprint: `/vibeflow:sprint`
+- Build feature: `/vibeflow:feature`
+- View progress: `/vibeflow:status`
 
 You're all set! Start building your first feature."
 

@@ -208,7 +208,7 @@ Display the sprint plan and provide next steps:
 ```
 
 Would you like me to:
-1. Save this sprint plan to `specs/sprints/sprint-[N].md`
+1. Save this sprint plan to `specs/sprints/sprint_[N].md`
 2. Adjust the sprint parameters (duration, focus)
 3. Start implementing the first feature
 
@@ -280,8 +280,11 @@ return selected, blocked, deferred
 - Continue planning
 
 **All features done:**
-- Show "All features are complete! No sprint needed."
-- Suggest running `/vibeflow:status` to verify
+- Show "All features are complete! Congratulations!"
+- Ask user what they'd like to do:
+  - "Add a new feature" — Guide them to add feature to roadmap (see Step 9: Add New Feature)
+  - "View progress" — Suggest running `/vibeflow:status`
+  - "Plan new sprint" — Re-run sprint planning with different parameters
 
 **No features fit:**
 - Show "Smallest feature ([X] points) exceeds capacity ([Y] points)"
@@ -290,3 +293,116 @@ return selected, blocked, deferred
 **Empty roadmap:**
 - Show "No features found in roadmap."
 - Suggest running `/vibeflow:new` first
+
+---
+
+## Step 9: Add New Feature (When All Features Done)
+
+When all features are complete and the user selects "Add a new feature":
+
+**1. Gather Feature Details using AskUserQuestion:**
+
+Ask for feature name, then these questions:
+
+**Question: Priority**
+"What is the priority level for this feature?"
+- "P0 - Critical" — Core value features, blocking other features
+- "P1 - Important" — Supporting features, nice to have soon
+- "P2 - Nice to have" — Enhancements, can be deferred
+
+**Question: Effort**
+"How much effort is required for this feature?"
+- "Small (1 point)" — 1-2 days
+- "Medium (3 points)" — 3-5 days — Recommended default
+- "Large (5 points)" — 1-2 weeks
+- "X-Large (8 points)" — 2-4 weeks
+
+**Question: Dependencies**
+"Does this feature depend on any existing features?"
+- "No dependencies" — Feature can be built independently
+- "Has dependencies" — Ask to list feature IDs (F001, F002, etc.)
+
+**Question: Phase**
+"Which release phase does this belong to?"
+- "phase-2" — Next release
+- "phase-1" — Current release
+- "Custom" — Specify phase name
+
+**Question: Tags** (optional - multiSelect)
+"What categories apply to this feature?"
+- "core" — Core functionality
+- "ui" — User interface focus
+- "data" — Data/processing focus
+- "analytics" — Analytics/reporting
+
+**2. Generate Feature Spec:**
+
+Create the feature spec file at `/specs/features/[feature_slug]/spec.md`:
+
+```markdown
+# [Feature Name] Spec
+
+## Purpose
+[Generate based on feature name and context]
+
+## User Flows
+1. **[Primary Flow]** — [Describe main user journey]
+2. **[Secondary Flow]** — [Alternative or error paths]
+
+## Screens
+- **[Screen 1]** — [Purpose and key elements]
+- **[Screen 2]** — [Purpose and key elements]
+
+## States
+- **Empty** — [When no data exists]
+- **Loading** — [During data fetch]
+- **Error** — [On failure]
+- **Success** — [Normal operation]
+
+## Interactions
+- **[Action]** — [Expected response]
+
+## Data Requirements
+- [List entities and their access patterns]
+- [Entity 1] (read, create, update)
+- [Entity 2] (read-only)
+
+## Validation
+- [Business rules and constraints]
+```
+
+**3. Update Roadmap:**
+
+Append the new feature to `/specs/roadmap.md` with auto-incremented ID:
+
+```markdown
+### [Feature Name]
+- **ID:** F[XXX] (next available number)
+- **Priority:** [P0/P1/P2]
+- **Effort:** [small/medium/large/xlarge]
+- **Status:** pending
+- **Dependencies:** [none or F001, F002...]
+- **Phase:** [phase-X]
+- **Tags:** [core, ui, data, analytics...]
+```
+
+**4. Confirm and Next Steps:**
+
+"New feature added to roadmap!
+
+**Feature Details:**
+- **Name:** [Feature Name]
+- **ID:** F[XXX]
+- **Priority:** [P0/P1/P2]
+- **Effort:** [X] points
+- **Phase:** [phase-X]
+
+**What's Next:**
+1. Review the generated spec at `/specs/features/[feature_slug]/spec.md`
+2. Run `/vibeflow:feature` to start building
+3. Or run `/vibeflow:sprint` to plan a new sprint
+
+Would you like to:
+1. Start building this feature now
+2. Plan a new sprint with this feature included
+3. Add another feature"

@@ -132,8 +132,8 @@ The following P0 features need attention:
 - [List P0 features that aren't done]
 
 You can update feature status directly in the roadmap file, or continue implementing with:
-- `/vibeflow:feature` — Build a complete feature
 - `/vibeflow:sprint` — Plan your next sprint
+- `/vibeflow:feature` — Build a complete feature
 
 Would you like details on any specific feature, or help with the next implementation step?"
 
