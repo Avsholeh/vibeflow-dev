@@ -133,26 +133,27 @@ This ensures all VibeFlow UIs are distinctive and production-grade, avoiding gen
 
 ### State Management Architecture
 
-VibeFlow uses a **props-driven, provider-based** state management pattern that keeps widgets pure and testable.
+VibeFlow uses a **props-driven, Riverpod AsyncNotifier-based** state management pattern that keeps widgets pure and testable.
 
 **Data Flow:**
 ```
-data.json (dev) → *_view.dart → *_screen.dart
-Repository (prod) → Provider → *_page.dart → *_screen.dart
+data.json (dev) → *_view_page.dart → *_page.dart
+Repository (prod) → UseCase → ViewModel (AsyncNotifier) → *_screen.dart → *_page.dart
 ```
 
 **Three-File Pattern:**
 | File | Purpose | Data Source |
 |-----|---------|-------------|
-| `*_screen.dart` | Pure UI (props-driven) | Constructor props |
-| `*_view.dart` | Development wrapper | `data.json` |
-| `*_page.dart` | Production wrapper | Provider |
+| `*_page.dart` | Pure UI (props-driven, ConsumerWidget) | Constructor props |
+| `*_view_page.dart` | Development wrapper | `data.json` |
+| `*_screen.dart` | Production wrapper (ConsumerWidget) | AsyncNotifier |
 
 **Key Pattern:**
 - Props-driven widgets (all data via constructor)
-- Provider pattern with ChangeNotifier
+- Riverpod AsyncNotifier for async state management
+- Use cases for business logic encapsulation
 - Repository pattern (interfaces in domain/, implementations in data/)
-- Auto-fetch on initialization
+- Auto-fetch on initialization via AsyncNotifier.build()
 - CRUD operations refresh data after each action
 
 ---
@@ -204,9 +205,9 @@ progress = (spec_complete * 25) +
 - `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
 
 *Implementation Status:*
-- `/lib/features/[feature_slug]/domain/models/` has .dart files → Models defined (+20%)
-- `/lib/features/[feature_slug]/providers/` has non-empty .dart files → Logic implemented (+15%)
-- `/lib/features/[feature_slug]/screens/*_page.dart` files exist → Screens implemented (+10%)
+- `/lib/features/[feature_slug]/domain/entities/` has .dart files → Models defined (+20%)
+- `/lib/features/[feature_slug]/presentation/view_models/` has non-empty .dart files → Logic implemented (+15%)
+- `/lib/features/[feature_slug]/presentation/pages/*_screen.dart` files exist → Screens implemented (+10%)
 
 ---
 
@@ -626,120 +627,164 @@ specs/
 
 ```
 lib/features/[feature_slug]/
+├── presentation/
+│   ├── pages/
+│   │   ├── [screen]_page.dart       # Pure UI (props-driven)
+│   │   ├── [screen]_view_page.dart  # Dev wrapper (data.json)
+│   │   └── [screen]_screen.dart     # Production wrapper (AsyncNotifier)
+│   ├── view_models/
+│   │   └── [feature]_view_model.dart  # MVVM ViewModels (AsyncNotifier)
+│   └── widgets/
+│       └── [widget].dart
 ├── domain/
-│   ├── models/
-│   │   └── [model].dart
-│   └── repositories/
-│       └── [feature]_repository.dart
+│   ├── entities/
+│   │   └── [entity].dart
+│   ├── repositories/
+│   │   └── [feature]_repository.dart
+│   └── usecases/
+│       └── [feature]_usecase.dart
 ├── data/
 │   ├── datasources/
 │   │   └── [feature]_datasource.dart
+│   ├── models/
+│   │   └── [model].dart             # DTOs for API/DB
 │   └── repositories/
 │       └── [feature]_repository_impl.dart
-├── providers/
-│   └── [feature]_provider.dart
-├── screens/
-│   ├── [screen]_screen.dart    # Pure UI (props-driven)
-│   ├── [screen]_view.dart      # Dev wrapper (data.json)
-│   └── [screen]_page.dart      # Production wrapper (Provider)
-├── widgets/
-│   └── [widget].dart
 └── routes.dart
 ```
 
 ---
 
-## Provider State Pattern Template
+## AsyncNotifier State Pattern Template
 
 ```dart
-import 'package:flutter/foundation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class [FeatureName]Provider extends ChangeNotifier {
-  final [FeatureName]Repository _repository;
+part '[feature_name]_view_model.g.dart';
 
-  [FeatureName]Provider({required [FeatureName]Repository repository})
-      : _repository = repository {
-    fetch[Model]s(); // Auto-load on initialization
+// State class
+class [FeatureName]State {
+  const [FeatureName]State({
+    this.items = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  final List<[Model]> items;
+  final bool isLoading;
+  final String? error;
+
+  [FeatureName]State copyWith({
+    List<[Model]>? items,
+    bool? isLoading,
+    String? error,
+  }) {
+    return [FeatureName]State(
+      items: items ?? this.items,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
   }
+}
 
-  // State
-  List<[Model]> _items = [];
-  List<[Model]> get items => _items;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _error;
-  String? get error => _error;
-  bool get hasError => _error != null;
+// ViewModel (AsyncNotifier)
+@riverpod
+class [FeatureName]ViewModel extends AsyncNotifier<[FeatureName]State> {
+  @override
+  [FeatureName]State build() {
+    // Auto-load on initialization
+    fetch[Model]s();
+    return const [FeatureName]State();
+  }
 
   // Initial data fetch
   Future<void> fetch[Model]s() async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      _items = await _repository.get[Model]s();
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
-      _setLoading(false);
-      notifyListeners();
-    }
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final useCase = ref.read(get[Model]sUseCaseProvider);
+      final items = await useCase();
+      return [FeatureName]State(items: items);
+    });
   }
 
   // CRUD operations
   Future<void> create[Model]([Model] [model]) async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      await _repository.create[Model]([model]);
-      await fetch[Model]s(); // Refresh data
-    } catch (e) {
-      _setError(e.toString());
-      _setLoading(false);
-      notifyListeners();
-    }
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final useCase = ref.read(create[Model]UseCaseProvider);
+      await useCase([model]);
+      // Refresh data after creation
+      final items = await ref.read(get[Model]sUseCaseProvider.future);
+      return [FeatureName]State(items: items);
+    });
   }
 
   Future<void> update[Model]([Model] [model]) async {
-    _clearError();
-
-    try {
-      await _repository.update[Model]([model]);
-      await fetch[Model]s(); // Refresh data
-    } catch (e) {
-      _setError(e.toString());
-      notifyListeners();
-    }
+    state = await AsyncValue.guard(() async {
+      final useCase = ref.read(update[Model]UseCaseProvider);
+      await useCase([model]);
+      // Refresh data after update
+      final items = await ref.read(get[Model]sUseCaseProvider.future);
+      return [FeatureName]State(items: items);
+    });
   }
 
   Future<void> delete[Model](String id) async {
-    _clearError();
-
-    try {
-      await _repository.delete[Model](id);
-      await fetch[Model]s(); // Refresh data
-    } catch (e) {
-      _setError(e.toString());
-      notifyListeners();
-    }
+    state = await AsyncValue.guard(() async {
+      final useCase = ref.read(delete[Model]UseCaseProvider);
+      await useCase(id);
+      // Refresh data after deletion
+      final items = await ref.read(get[Model]sUseCaseProvider.future);
+      return [FeatureName]State(items: items);
+    });
   }
+}
+```
 
-  // Private state helpers
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
+## Use Case Pattern Template
+
+```dart
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '[feature_name]_usecase.g.dart';
+
+// Use Case class
+class [Action][Model]UseCase {
+  final [FeatureName]Repository _repository;
+
+  [Action][Model]UseCase(this._repository);
+
+  Future<List<[Model]>> call() async {
+    // Business logic here
+    return await _repository.get[Model]s();
   }
+}
 
-  void _setError(String error) {
-    _error = error;
-  }
+// Use Case Provider
+@riverpod
+[Action][Model]UseCase [action][Model]UseCase([Action][Model]UseCaseRef ref) {
+  final repository = ref.watch([featureName]RepositoryProvider);
+  return [Action][Model]UseCase(repository);
+}
+```
 
-  void _clearError() {
-    _error = null;
+**Usage in Page (ConsumerWidget):**
+```dart
+class [FeatureName]Screen extends ConsumerWidget {
+  const [FeatureName]Screen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncState = ref.watch([featureName]ViewModelProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('[Feature Name]')),
+      body: switch (asyncState) {
+        AsyncValue(:final data?) => [FeatureName]Content(items: data.items),
+        AsyncValue(:final error?) => [FeatureName]Error(error: error),
+        _ => const [FeatureName]Loading(),
+      },
+    );
   }
 }
 ```
@@ -816,12 +861,18 @@ specs/features/[feature_slug]/
 └── models.md
 
 lib/features/[feature_slug]/
-├── domain/models/
-├── domain/repositories/
-├── data/datasources/
-├── data/repositories/
-├── providers/
-└── screens/
+├── presentation/
+│   ├── pages/
+│   ├── view_models/
+│   └── widgets/
+├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── usecases/
+└── data/
+    ├── datasources/
+    ├── models/
+    └── repositories/
 ```
 
 ---
@@ -887,12 +938,14 @@ When implementing Flutter screens and widgets:
 - **Light & Dark Mode** — Always respect `Theme.of(context).brightness`. Use `ColorScheme` for semantic colors.
 - **Use Design Tokens** — Map `colors.json` → `ColorScheme.fromSeed(seedColor: primary)`, custom extensions for semantic colors (success, warning, etc.). Use `GoogleFonts.[font]()` for `TextTheme`.
 - **Props-Driven Widgets** — All widgets receive data & callbacks via constructor (`final` fields). Never import `data.json` in production widgets — only in development view wrappers.
+- **ConsumerWidget Pattern** — Use `ConsumerWidget` for all pages and screens. Watch state with `ref.watch()`, call methods with `ref.read()`.
 - **Each Screen Manages Its Own Scaffold** — Feature screens include their own `Scaffold`, `AppBar`, and navigation elements. Use shared widgets from `core/widgets/` for consistency.
 - **Bold Aesthetics** — Strictly follow the `flutter-ui-design` skill: commit to one extreme visual direction (brutal minimal, maximalist joy, retro-futurist, luxury restraint, etc.). Use `AnimatedSwitcher`, `Hero`, `flutter_animate`, `CustomPaint`, shaders, clippers, etc. Avoid generic Material 3 look.
 
 ### Flutter-Specific Guidelines
 - Use **Material 3** (`useMaterial3: true`) with heavy customization
-- Prefer **StatelessWidget**; use `StatefulWidget` or packages only when needed
+- Prefer **ConsumerWidget** for all pages and screens; use `ConsumerStatefulWidget` only when necessary
+- Use `ref.watch()` for reading state, `ref.read()` for calling methods
 - Animations: implicit first (`AnimatedOpacity`, `AnimatedContainer`), then `flutter_animate` or Rive if vision demands
 - Responsiveness: thumb zones, safe areas, dynamic type scaling (`MediaQuery.textScalerOf`)
 - Icons: `Icons.` + Material Symbols (via `Icons` or custom SVGs)

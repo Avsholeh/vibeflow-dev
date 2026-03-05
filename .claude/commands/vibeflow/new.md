@@ -233,6 +233,354 @@ Create `specs/overview.md` with:
 
 ---
 
+### 3.5: Core Infrastructure
+
+**Immediately create** core infrastructure files for the app:
+
+Create the following files in `lib/`:
+
+**DI Setup:**
+- `lib/core/di/providers.dart` - App-wide Riverpod providers
+
+**Base Classes:**
+- `lib/features/core/base_view_model.dart` - Base AsyncNotifier class
+
+**Routing:**
+- `lib/core/routing/app_router.dart` - go_router configuration
+
+**Network:**
+- `lib/core/network/api_service.dart` - Dio HTTP client setup
+
+**Theme:**
+- `lib/core/theme/app_theme.dart` - Material 3 theme configuration
+
+**Shared Widgets:**
+- `lib/core/widgets/app_scaffold.dart` - Shared scaffold wrapper
+- `lib/core/widgets/error_widget.dart` - Error display widget
+- `lib/core/widgets/loading_widget.dart` - Loading indicator
+- `lib/core/widgets/empty_state_widget.dart` - Empty state display
+
+**Utilities:**
+- `lib/core/utils/constants.dart` - App constants
+- `lib/core/utils/extensions.dart` - Dart extensions
+- `lib/core/utils/validators.dart` - Input validators
+
+**Content for each file:**
+
+`lib/core/di/providers.dart`:
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'providers.g.dart';
+
+/// App-wide Riverpod providers for dependency injection.
+class AppProviders {
+  // Add your app-level providers here
+}
+```
+
+`lib/features/core/base_view_model.dart`:
+```dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Base ViewModel class providing common functionality for all ViewModels.
+abstract class BaseViewModel<T> extends AsyncNotifier<T> {
+  bool get isLoading => state.isLoading;
+  bool get hasError => state.hasError;
+  Object? get error => state.error;
+
+  @protected
+  Future<void> executeOperation(Future<T> Function() operation) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(operation);
+  }
+
+  Future<void> refresh() async {
+    // Subclasses override for refresh logic
+  }
+}
+```
+
+`lib/core/routing/app_router.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class AppRouter {
+  static final goRouter = GoRouter(
+    debugLogDiagnostics: true,
+    routes: [
+      // Add routes here
+    ],
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Error')),
+      body: Center(
+        child: Text('Page not found: ${state.uri}'),
+      ),
+    ),
+  );
+}
+```
+
+`lib/core/network/api_service.dart`:
+```dart
+import 'package:dio/dio.dart';
+
+class ApiService {
+  late final Dio _dio;
+
+  ApiService({
+    String baseUrl = 'https://api.example.com',
+    Duration connectTimeout = const Duration(seconds: 30),
+    Duration receiveTimeout = const Duration(seconds: 30),
+  }) {
+    _dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: connectTimeout,
+      receiveTimeout: receiveTimeout,
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    ));
+  }
+
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) =>
+      _dio.get(path, queryParameters: queryParameters);
+
+  Future<Response> post(String path, {dynamic data}) => _dio.post(path, data: data);
+
+  Future<Response> put(String path, {dynamic data}) => _dio.put(path, data: data);
+
+  Future<Response> delete(String path) => _dio.delete(path);
+
+  Dio get dio => _dio;
+}
+```
+
+`lib/core/theme/app_theme.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class AppTheme {
+  static ThemeData get lightTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3B82F6)),
+        textTheme: GoogleFonts.interTextTheme(),
+      );
+
+  static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF3B82F6),
+          brightness: Brightness.dark,
+        ),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      );
+}
+```
+
+`lib/core/widgets/app_scaffold.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+class AppScaffold extends StatelessWidget {
+  const AppScaffold({
+    super.key,
+    this.title,
+    required this.body,
+    this.actions,
+    this.floatingActionButton,
+  });
+
+  final String? title;
+  final Widget body;
+  final List<Widget>? actions;
+  final Widget? floatingActionButton;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: title != null
+          ? AppBar(title: Text(title!), actions: actions)
+          : null,
+      body: SafeArea(child: body),
+      floatingActionButton: floatingActionButton,
+    );
+  }
+}
+```
+
+`lib/core/widgets/error_widget.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+class AppErrorWidget extends StatelessWidget {
+  const AppErrorWidget({
+    super.key,
+    required this.error,
+    this.onRetry,
+  });
+
+  final String error;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 64),
+          const SizedBox(height: 16),
+          Text('Something went wrong'),
+          const SizedBox(height: 8),
+          Text(error),
+          if (onRetry != null) ...[
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: const Text('Retry'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+`lib/core/widgets/loading_widget.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+class AppLoadingWidget extends StatelessWidget {
+  const AppLoadingWidget({super.key, this.message});
+
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          if (message != null) ...[
+            const SizedBox(height: 16),
+            Text(message!),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+`lib/core/widgets/empty_state_widget.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+class AppEmptyStateWidget extends StatelessWidget {
+  const AppEmptyStateWidget({
+    super.key,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+    this.icon = Icons.inbox,
+  });
+
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 64),
+          const SizedBox(height: 16),
+          Text(message),
+          if (actionLabel != null && onAction != null) ...[
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onAction,
+              child: Text(actionLabel!),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+`lib/core/utils/constants.dart`:
+```dart
+class AppConstants {
+  static const String appName = 'App Name';
+  static const String apiBaseUrl = 'https://api.example.com';
+  static const Duration apiTimeout = Duration(seconds: 30);
+  static const int defaultPageSize = 20;
+}
+```
+
+`lib/core/utils/extensions.dart`:
+```dart
+import 'package:flutter/material.dart';
+
+extension StringExtensions on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return '${this[0].toUpperCase()}${substring(1)}';
+  }
+
+  bool get isBlank => trim().isEmpty;
+}
+
+extension BuildContextExtensions on BuildContext {
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
+  TextTheme get textTheme => Theme.of(this).textTheme;
+  Size get screenSize => MediaQuery.of(this).size;
+  double get screenWidth => screenSize.width;
+  double get screenHeight => screenSize.height;
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+}
+```
+
+`lib/core/utils/validators.dart`:
+```dart
+String? validateEmail(String? value) {
+  if (value == null || value.isEmpty) return 'Email is required';
+  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+    return 'Please enter a valid email';
+  }
+  return null;
+}
+
+String? validatePassword(String? value) {
+  if (value == null || value.isEmpty) return 'Password is required';
+  if (value.length < 8) return 'Password must be at least 8 characters';
+  return null;
+}
+
+String? validateRequired(String? value, [String fieldName = 'This field']) {
+  if (value == null || value.trim().isEmpty) return '$fieldName is required';
+  return null;
+}
+```
+
+---
+
 ## Step 4: Design System Research & Generation
 
 "Your app structure is ready! Let's set up your design system.
@@ -262,11 +610,22 @@ Present a comprehensive summary:
 **📁 Structure:** Feature-first architecture ready
 
 **Generated Files:**
+
+**Specification:**
 - `specs/overview.md` — Product vision
 - `specs/roadmap.md` — Feature roadmap with metadata
 - `specs/data_shape.md` — Data entities
 - `specs/features/*/spec.md` — [N] feature specifications
 - `specs/design_system/*` — Design tokens (if theme selected)
+
+**Core Infrastructure:**
+- `lib/core/di/providers.dart` — DI setup
+- `lib/features/core/base_view_model.dart` — Base ViewModel
+- `lib/core/routing/app_router.dart` — Routing
+- `lib/core/network/api_service.dart` — HTTP client
+- `lib/core/theme/app_theme.dart` — Theme configuration
+- `lib/core/widgets/*` — Shared widgets
+- `lib/core/utils/*` — Utilities
 
 **Next Steps:**
 

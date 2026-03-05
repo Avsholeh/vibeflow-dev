@@ -43,9 +43,9 @@ For each feature, check the following paths:
 - `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
 
 **Implementation Status:**
-- `/lib/features/[feature_slug]/domain/models/` has .dart files → Models defined (+20%)
-- `/lib/features/[feature_slug]/providers/` has non-empty .dart files → Logic implemented (+15%)
-- `/lib/features/[feature_slug]/screens/*_page.dart` files exist → Screens implemented (+10%)
+- `/lib/features/[feature_slug]/domain/entities/` has .dart files → Models defined (+20%)
+- `/lib/features/[feature_slug]/presentation/view_models/` has non-empty .dart files → Logic implemented (+15%)
+- `/lib/features/[feature_slug]/presentation/pages/*_screen.dart` files exist → Screens implemented (+10%)
 
 **Feature slug conversion:**
 - Convert feature name to lowercase, replace spaces with hyphens

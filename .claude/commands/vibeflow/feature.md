@@ -108,11 +108,13 @@ Then create screen widgets:
 ### Phase 4: Implement Logic
 
 Create business logic:
-- Generate domain models in `lib/features/[feature_slug]/domain/models/`
+- Generate domain entities in `lib/features/[feature_slug]/domain/entities/`
 - Generate repository interfaces in `lib/features/[feature_slug]/domain/repositories/`
+- Generate use cases in `lib/features/[feature_slug]/domain/usecases/`
+- Generate data models (DTOs) in `lib/features/[feature_slug]/data/models/`
 - Generate repository implementations in `lib/features/[feature_slug]/data/repositories/`
 - Generate data sources in `lib/features/[feature_slug]/data/datasources/`
-- Generate providers in `lib/features/[feature_slug]/providers/`
+- Generate ViewModels in `lib/features/[feature_slug]/presentation/view_models/`
 
 ### Phase 5: Update Feature Status
 
@@ -137,12 +139,15 @@ Present a comprehensive summary:
 - `specs/features/[feature_slug]/models.md`
 
 **Implementation:**
-- `lib/features/[feature_slug]/domain/models/` — Domain models
+- `lib/features/[feature_slug]/domain/entities/` — Domain entities
 - `lib/features/[feature_slug]/domain/repositories/` — Repository interfaces
+- `lib/features/[feature_slug]/domain/usecases/` — Use cases
+- `lib/features/[feature_slug]/data/models/` — DTOs
 - `lib/features/[feature_slug]/data/repositories/` — Repository implementations
 - `lib/features/[feature_slug]/data/datasources/` — Data sources
-- `lib/features/[feature_slug]/providers/` — State providers
-- `lib/features/[feature_slug]/screens/` — UI screens
+- `lib/features/[feature_slug]/presentation/view_models/` — ViewModels (AsyncNotifier)
+- `lib/features/[feature_slug]/presentation/pages/` — UI screens
+- `lib/features/[feature_slug]/presentation/widgets/` — UI components
 
 **Status Updated:** [Feature Name] is now marked as `in_progress` in the roadmap.
 
@@ -172,8 +177,9 @@ Present a comprehensive summary:
 
 **Implementation Notes:**
 - Data sources use mock implementations by default — replace with real API/database when ready
-- State management uses the Provider pattern — update `main.dart` if needed
-- Screens use sample data in development — they'll connect to real providers in production"
+- State management uses Riverpod AsyncNotifier pattern — ViewModels use AsyncNotifier for async state
+- Screens use sample data in development — they'll connect to real ViewModels in production
+- Use cases encapsulate business logic and are injected into ViewModels"
 
 ---
 
@@ -247,20 +253,21 @@ A feature is considered complete when all of the following are met:
 - [ ] `specs/features/[feature_slug]/models.md` exists with Dart model definitions
 
 ### Domain Models (20%)
-- [ ] Domain model classes exist in `lib/features/[feature_slug]/domain/models/`
-- [ ] Models have all required properties and types
+- [ ] Domain entity classes exist in `lib/features/[feature_slug]/domain/entities/`
+- [ ] Entities have all required properties and types
 - [ ] Repository interface exists in `lib/features/[feature_slug]/domain/repositories/`
 
 ### Business Logic (15%)
 - [ ] Repository implementation exists in `lib/features/[feature_slug]/data/repositories/`
 - [ ] Data source exists (mock, API, or database)
-- [ ] Provider exists with state management (ChangeNotifier)
-- [ ] Provider is registered in `main.dart`
+- [ ] Use cases exist in `lib/features/[feature_slug]/domain/usecases/`
+- [ ] ViewModel exists with AsyncNotifier state management
+- [ ] ViewModel is registered as a Riverpod provider
 
 ### Screens (10%)
-- [ ] `*_screen.dart` files exist for all screens (props-driven UI)
-- [ ] `*_view.dart` files exist for development (uses data.json)
-- [ ] `*_page.dart` files exist for production (uses Provider)
+- [ ] `*_page.dart` files exist for all screens (props-driven UI, ConsumerWidget)
+- [ ] `*_view_page.dart` files exist for development (uses data.json)
+- [ ] `*_screen.dart` files exist for production (uses AsyncNotifier)
 - [ ] Screens use flutter-ui-design skill for distinctive UI
 
 ### Additional Checks
