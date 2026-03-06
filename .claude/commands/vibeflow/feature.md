@@ -17,36 +17,36 @@ Stop here if prerequisites are missing.
 
 ## Step 2: List Available Features
 
-First, check if sprint plan files exist in `/specs/sprints/`.
+First, check if development plan files exist in `/specs/plans/`.
 
-**If sprint plans exist:**
-1. Find the latest sprint plan (highest N in `sprint_[N].md`)
-2. Read the sprint plan file
+**If development plans exist:**
+1. Find the latest development plan (highest N in `plan_[N].md`)
+2. Read the development plan file
 3. Extract selected features from the "Selected Features" section
-4. Display features from the sprint plan in implementation order
+4. Display features from the development plan in implementation order
 
-"If you have an active sprint plan, I'll show features from your latest sprint.
+"If you have an active development plan, I'll show features from your latest plan.
 
-**Sprint Plan: [Sprint Name]**
-**Capacity:** [X] points | **Focus:** [Focus area]
+**Development Plan:** [Plan Name]
+**Focus:** [Focus area]
 
-**Features for this sprint:**
-1. **[Feature 1]** (F001) — Priority: P0 | Effort: medium | Status: pending
-2. **[Feature 2]** (F002) — Priority: P0 | Effort: large | Status: pending
+**Features for this plan:**
+1. **[Feature 1]** (F001) — Priority: P0 | Status: pending
+2. **[Feature 2]** (F002) — Priority: P0 | Status: pending
 …
 
 Type the feature name or number to build, or 'all' to see roadmap features:"
 
 Wait for user input.
 
-**If user types 'all' or no sprint plans exist:**
+**If user types 'all' or no development plans exist:**
 Read the roadmap and list all available features:
 
 "Which feature would you like to build?
 
 **Available Features:**
-1. **[Feature 1]** (F001) — Priority: P0 | Effort: medium | Status: pending
-2. **[Feature 2]** (F002) — Priority: P1 | Effort: large | Status: pending
+1. **[Feature 1]** (F001) — Priority: P0 | Status: pending
+2. **[Feature 2]** (F002) — Priority: P1 | Status: pending
 …
 
 Type the feature name or number:"
@@ -108,11 +108,21 @@ Then create screen widgets:
 ### Phase 4: Implement Logic
 
 Create business logic:
-- Generate domain models in `lib/features/[feature_slug]/domain/models/`
-- Generate repository interfaces in `lib/features/[feature_slug]/domain/repositories/`
-- Generate repository implementations in `lib/features/[feature_slug]/data/repositories/`
-- Generate data sources in `lib/features/[feature_slug]/data/datasources/`
-- Generate providers in `lib/features/[feature_slug]/providers/`
+
+**Determine model location:**
+1. Check `specs/data_shape.md` for shared entities section
+2. If entity is marked as "shared", generate in `lib/core/domain/models/`
+3. If entity is used by 3+ features, generate in `lib/core/domain/models/`
+4. Otherwise, generate in `lib/features/[feature_slug]/domain/models/`
+
+**Generate files:**
+- Domain models (shared → `lib/core/domain/models/` or feature-specific → `lib/features/[feature_slug]/domain/models/`)
+- Repository interfaces in `lib/features/[feature_slug]/domain/repositories/`
+- Repository implementations in `lib/features/[feature_slug]/data/repositories/`
+- Data sources in `lib/features/[feature_slug]/data/datasources/`
+- Providers in `lib/features/[feature_slug]/providers/`
+
+**Note:** If generating models in `lib/core/domain/models/`, check if the model file already exists. If it does, import the existing model instead of creating a duplicate.
 
 ### Phase 5: Update Feature Status
 
@@ -137,7 +147,8 @@ Present a comprehensive summary:
 - `specs/features/[feature_slug]/models.md`
 
 **Implementation:**
-- `lib/features/[feature_slug]/domain/models/` — Domain models
+- `lib/core/domain/models/` — Shared domain models (if any)
+- `lib/features/[feature_slug]/domain/models/` — Feature-specific models
 - `lib/features/[feature_slug]/domain/repositories/` — Repository interfaces
 - `lib/features/[feature_slug]/data/repositories/` — Repository implementations
 - `lib/features/[feature_slug]/data/datasources/` — Data sources
@@ -159,15 +170,15 @@ Present a comprehensive summary:
    /vibeflow:status
    ```
 
-3. **Plan your next sprint:**
+3. **Plan your next development:**
    ```bash
-   /vibeflow:sprint
+   /vibeflow:plan
    ```
 
 4. **Build another feature:**
    ```bash
    /vibeflow:feature
-   # Select the next feature from the sprint plan
+   # Select the next feature from the development plan
    ```
 
 **Implementation Notes:**
@@ -179,9 +190,9 @@ Present a comprehensive summary:
 
 ## Important Notes
 
-- **Sprint plan integration:** When sprint plans exist in `/specs/sprints/`, prioritize showing features from the latest sprint plan. Users can type 'all' to see all roadmap features
-- **Sprint plan parsing:** Read sprint plan files to extract "Selected Features" section with feature names, IDs, priorities, efforts, and implementation order
-- **Roadmap fallback:** If no sprint plans exist or user types 'all', fall back to showing all features from the roadmap
+- **Development plan integration:** When development plans exist in `/specs/plans/`, prioritize showing features from the latest development plan. Users can type 'all' to see all roadmap features
+- **Development plan parsing:** Read development plan files to extract "Selected Features" section with feature names, IDs, priorities, and implementation order
+- **Roadmap fallback:** If no development plans exist or user types 'all', fall back to showing all features from the roadmap
 - **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI (see CLAUDE.md)
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Atomic execution:** If any phase fails, report the error and stop — don't partially implement

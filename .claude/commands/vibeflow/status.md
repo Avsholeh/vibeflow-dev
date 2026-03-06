@@ -132,7 +132,7 @@ The following P0 features need attention:
 - [List P0 features that aren't done]
 
 You can update feature status directly in the roadmap file, or continue implementing with:
-- `/vibeflow:sprint` — Plan your next sprint
+- `/vibeflow:plan` — Plan your next development
 - `/vibeflow:feature` — Build a complete feature
 
 Would you like details on any specific feature, or help with the next implementation step?"
@@ -163,7 +163,7 @@ Would you like details on any specific feature, or help with the next implementa
 - If some fields are missing from the feature list → Use sensible defaults (P1, medium, pending, none, phase-1)
 
 **Circular dependencies:**
-- Not relevant for status checking (dependency resolution is for sprint planning)
+- Not relevant for status checking (dependency resolution is for development planning)
 
 **Empty roadmap:**
 - Show "No features found in roadmap. Please add features first."

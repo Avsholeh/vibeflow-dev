@@ -26,13 +26,13 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 # → Full Material 3 design system generated
 ```
 
-### Step 3: Plan Sprints
+### Step 3: Plan Development
 
 ```bash
-/vibeflow:sprint
-# → Select sprint duration and focus area
-# → AI resolves dependencies and selects features that fit capacity
-# → Sprint plan generated
+/vibeflow:plan
+# → Select focus area
+# → AI resolves dependencies and prioritizes features
+# → Development plan generated
 ```
 
 ### Step 4: Build Features
@@ -61,7 +61,7 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 |-------|----------|
 | Start | `/vibeflow:new` |
 | Style | `/vibeflow:theme` |
-| Plan | `/vibeflow:sprint` |
+| Plan | `/vibeflow:plan` |
 | Build | `/vibeflow:feature` |
 | Track | `/vibeflow:status` |
 
@@ -127,9 +127,26 @@ This ensures all VibeFlow UIs are distinctive and production-grade, avoiding gen
 
 - **Features are independent** — Each feature is a self-contained module
 - **Clean Architecture layers** — data/, domain/, screens/, widgets/, providers/ within each feature
-- **Core for shared** — Only truly app-wide utilities go in `core/` (shared widgets, routing, theme)
+- **Core for shared** — Shared models (3+ features), widgets, routing, theme go in `core/`
 - **Repository pattern** — Interfaces in domain/, implementations in data/
 - **Props-driven widgets** — All data received via constructor, callbacks via constructor parameters
+
+### Cross-Feature Model Sharing
+
+VibeFlow uses **shared models in `core/`** to handle cross-feature dependencies:
+
+| Scenario | Location | Example |
+|----------|----------|---------|
+| Model used by 3+ features | `lib/core/domain/models/` | `User`, `Transaction`, `Category` |
+| Model used by 2 features | First feature's domain | `auth/user.dart` → imported by `profile` |
+| One-way dependency | Import from owner | `todos` imports from `auth` |
+| Circular dependency | Extract to core | A→B, B→A → extract shared models |
+
+**Key Principles:**
+1. **Shared domain models** go in `lib/core/domain/models/`
+2. **Feature-specific models** stay in `lib/features/[feature]/domain/models/`
+3. **Import direction** should be one-way (avoid circular dependencies)
+4. **When in doubt**, extract to `core/` — it's easier to move than to refactor later
 
 ### State Management Architecture
 
@@ -210,25 +227,6 @@ progress = (spec_complete * 25) +
 
 ---
 
-### Effort Estimation
-
-| Effort | Points | Duration |
-|--------|--------|----------|
-| `small` | 1 point | 1-2 days |
-| `medium` | 3 points | 3-5 days |
-| `large` | 5 points | 1-2 weeks |
-| `xlarge` | 8 points | 2-4 weeks |
-
-**Sprint Capacity Calculation:**
-
-| Duration | Points |
-|----------|--------|
-| 1 week | ~6 points |
-| 2 weeks | ~10 points |
-| 1 month | ~20 points |
-
----
-
 ### Priority Levels
 
 | Priority | Meaning | When to Use |
@@ -299,11 +297,12 @@ A list view of all transactions with filtering and search.
 |-------|------|--------|
 | `ID` | string | F001, F002, F003... (auto-generated) |
 | `Priority` | enum | P0, P1, P2 |
-| `Effort` | enum | small, medium, large, xlarge |
 | `Status` | enum | pending, started, in_progress, done, blocked |
 | `Dependencies` | list | F001, F002... or "none" |
 | `Phase` | string | phase-1, phase-2... - Release phase assignment |
 | `Tags` | list | core, ui, data, analytics... - Optional categorization |
+
+**Note:** The `Effort` field may be present in existing roadmaps for informational purposes but is no longer used for capacity calculations.
 
 ---
 
@@ -628,7 +627,7 @@ specs/
 lib/features/[feature_slug]/
 ├── domain/
 │   ├── models/
-│   │   └── [model].dart
+│   │   └── [model].dart         # Feature-specific models only
 │   └── repositories/
 │       └── [feature]_repository.dart
 ├── data/
@@ -645,7 +644,19 @@ lib/features/[feature_slug]/
 ├── widgets/
 │   └── [widget].dart
 └── routes.dart
+
+lib/core/
+├── domain/
+│   └── models/
+│       ├── user.dart           # Shared models (used by 3+ features)
+│       ├── transaction.dart    # Shared domain entities
+│       └── category.dart       # Shared business concepts
+├── widgets/                     # Shared widgets
+├── routing/                     # App routing
+└── theme/                       # App theme configuration
 ```
+
+**Shared Models Rule:** When a model is used by 3 or more features, place it in `lib/core/domain/models/` instead of within a specific feature. This prevents circular dependencies and promotes code reuse.
 
 ---
 
@@ -848,20 +859,19 @@ View implementation progress across all features.
 
 ---
 
-### `/vibeflow:sprint`
+### `/vibeflow:plan`
 
-Plan sprints based on effort estimates and dependencies.
+Create development plans based on priorities and dependencies.
 
 **What it does:**
 1. Parses roadmap for features with metadata
-2. Prompts for sprint parameters (duration, focus)
+2. Prompts for focus area (P0 only, specific phase, all pending, in-progress)
 3. Resolves dependencies using topological sort
-4. Selects features that fit capacity
-5. Generates sprint plan
+4. Orders features by priority (P0 > P1 > P2)
+5. Generates development plan
 
 **Questions asked:**
-1. Sprint duration (1 week, 2 weeks, 1 month, custom)
-2. Focus area (P0 only, specific phase, all pending, in-progress)
+1. Focus area (P0 only, specific phase, all pending, in-progress)
 
 ---
 
@@ -874,7 +884,6 @@ Plan sprints based on effort estimates and dependencies.
 | Circular dependencies | Feature A depends on B, B depends on A | Break cycle, remove one dependency |
 | Invalid dependency | Feature ID doesn't exist | Check roadmap for correct IDs |
 | All features done | No pending features | All features marked as `done` |
-| No features fit | Smallest feature > capacity | Increase duration |
 | Dependencies Required | Feature depends on incomplete features | Build dependencies first |
 
 ---

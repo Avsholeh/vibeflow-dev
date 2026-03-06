@@ -170,7 +170,14 @@ Create `specs/overview.md` with:
 ```markdown
 # Data Shape
 
-## Entities
+## Shared Entities (for lib/core/domain/models/)
+
+Entities used by 3 or more features should be marked as shared.
+
+### [Shared Entity 1]
+[Description - mark as shared if used across multiple features]
+
+## Feature-Specific Entities
 
 ### [Entity 1]
 [Description based on its role in the app]
@@ -190,6 +197,11 @@ Create `specs/overview.md` with:
 - Features mentioning "create", "manage", "track" → entities
 - Dashboard/reports → analytics entity
 - Categories/tags → classification entity
+
+**Shared Entity Detection:**
+- User, Profile, Account → Almost always shared
+- Transaction, Item, Order → Often shared (used by create, list, detail, analytics features)
+- Category, Tag → Often shared (used by multiple features for classification)
 
 ---
 
@@ -275,9 +287,9 @@ Present a comprehensive summary:
    /vibeflow:theme
    ```
 
-2. **Plan your sprint:**
+2. **Plan your development:**
    ```bash
-   /vibeflow:sprint
+   /vibeflow:plan
    ```
 
 3. **Build features:**
@@ -292,7 +304,7 @@ Present a comprehensive summary:
 
 **Quick Reference:**
 - Set up design: `/vibeflow:theme`
-- Plan sprint: `/vibeflow:sprint`
+- Plan development: `/vibeflow:plan`
 - Build feature: `/vibeflow:feature`
 - View progress: `/vibeflow:status`
 

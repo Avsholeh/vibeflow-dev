@@ -172,8 +172,8 @@ You can:
 - Run `/vibeflow:theme` again to choose different options
 
 **What's next:**
-- `/vibeflow:sprint` — Plan your first sprint
-- `/vibeflow:feature` — Build features from your sprint plan
+- `/vibeflow:plan` — Plan your first development
+- `/vibeflow:feature` — Build features from your development plan
 - `/vibeflow:status` — Check your progress"
 
 ---

@@ -1,6 +1,6 @@
-# Sprint Planning
+# Development Planning
 
-You are helping the user create sprint plans for their Flutter app based on roadmap features, effort estimates, priorities, and dependencies.
+You are helping the user create development plans for their Flutter app based on roadmap features, priorities, and dependencies.
 
 ## Step 1: Check Prerequisites
 
@@ -8,38 +8,48 @@ First, check if `/specs/roadmap.md` exists.
 
 If it does **not** exist:
 
-"Before we can plan sprints, we need the product roadmap in place.
+"Before we can plan development, we need the product roadmap in place.
 Please run `/vibeflow:new` to create the project first."
 
 Stop here if the roadmap is missing.
 
 ---
 
-## Step 2: Parse Features
+## Step 2: Choose Planning Mode
+
+Ask the user for planning mode using `AskUserQuestion`:
+
+**Question: Planning Mode**
+"What would you like to do?"
+Options:
+- "Continue working" — Plan development with existing features
+- "Add new feature" — Add a new feature to the roadmap
+
+**If user selects "Continue working":**
+Proceed to Step 3: Parse Features.
+
+**If user selects "Add new feature":**
+Jump to Step 10: Add New Feature.
+
+---
+
+## Step 3: Parse Features
 
 Read `/specs/roadmap.md` and extract all features with their metadata.
 
 **Parse Features:**
 - Extract metadata from list format under each feature heading
-- **Fields:** ID, Priority, Effort, Status, Dependencies, Phase, Tags
-- **Missing metadata:** Use sensible defaults (P1, medium, pending, none, phase-1)
+- **Fields:** ID, Priority, Status, Dependencies, Phase, Tags
+- **Missing metadata:** Use sensible defaults (P1, pending, none, phase-1)
 
 ---
 
-## Step 3: Gather Sprint Parameters
+## Step 4: Gather Plan Parameters
 
-Ask the user for sprint planning parameters using `AskUserQuestion`:
+Ask the user for planning focus using `AskUserQuestion`:
 
-**Question 1: Sprint Duration**
-"How long is your sprint?"
-Options:
-- "1 week" (Capacity: ~6 points)
-- "2 weeks" (Capacity: ~10 points) — Recommended
-- "1 month" (Capacity: ~20 points)
-- "Custom" — Ask for number of weeks
-
-**Question 2: Focus Area**
-"What should be the focus of this sprint?"
+**Question: Development Focus**
+"What should be the focus of this development plan?"
 Options:
 - "P0 features only" — Critical path to MVP
 - "Specific phase" — Then ask which phase
@@ -48,7 +58,7 @@ Options:
 
 ---
 
-## Step 4: Parse and Filter Features
+## Step 5: Parse and Filter Features
 
 Read the roadmap and extract all features with their metadata:
 
@@ -56,16 +66,9 @@ Read the roadmap and extract all features with their metadata:
 - Feature name
 - Feature ID (F001, F002...)
 - Priority (P0, P1, P2)
-- Effort (small, medium, large, xlarge)
 - Status (pending, in_progress, done, blocked)
 - Dependencies (array of feature IDs)
 - Phase
-
-**Convert effort to points:**
-- `small` → 1 point
-- `medium` → 3 points
-- `large` → 5 points
-- `xlarge` → 8 points
 
 **Filter features based on focus area:**
 - P0 only → `priority === "P0"`
@@ -75,7 +78,7 @@ Read the roadmap and extract all features with their metadata:
 
 ---
 
-## Step 5: Resolve Dependencies
+## Step 6: Resolve Dependencies
 
 Implement topological sort to order features by dependencies:
 
@@ -107,57 +110,54 @@ for feature in filtered_features:
 
 ---
 
-## Step 6: Select Features for Sprint
+## Step 7: Order Features by Priority
 
 Starting with the highest priority features from the sorted list:
 
-1. Calculate remaining capacity
-2. Add feature if:
-   - Feature's points <= remaining capacity
-   - All dependencies are either:
-     - Already done (status === "done")
-     - Already included in this sprint
-3. Subtract feature points from capacity
-4. Continue until capacity is exhausted or no more features fit
+1. Group features by priority (P0 first, then P1, then P2)
+2. Within each priority level, maintain dependency order
+3. Include feature if all dependencies are either:
+   - Already done (status === "done")
+   - Already included in this plan
 
 **Track:**
 - Selected features
 - Blocked features (dependencies not met)
-- Deferred features (not enough capacity)
+- Deferred features (not in focus area)
 
 ---
 
-## Step 7: Generate Sprint Plan
+## Step 8: Generate Development Plan
 
-Format the sprint plan with the following structure:
+Format the development plan with the following structure:
 
 ```markdown
-# [Duration] Sprint Plan ([Capacity] points)
+# Development Plan - [Focus Area]
 
-## Sprint Goals
+## Plan Goals
 [Summary based on focus area: "Complete P0 features for MVP Foundation"]
 
-## Selected Features ([Total Points]/[Capacity] points)
+## Selected Features ([N] total)
 
 ### Priority: P0
-1. **[Feature 1]** ([X] points) — [Feature ID]
+1. **[Feature 1]** — [Feature ID]
    - **Dependencies:** [None or list]
    - **Deliverables:** [Key screens, logic, data]
    - **Acceptance:** [What "done" looks like]
 
-2. **[Feature 2]** ([X] points) — [Feature ID]
+2. **[Feature 2]** — [Feature ID]
    - **Dependencies:** F001 (must complete [Feature 1] first)
    - **Deliverables:** [Key screens, logic, data]
    - **Acceptance:** [What "done" looks like]
 
-### Remaining Capacity
-[Any lower priority features that fit]
+### Priority: P1
+[Additional features if applicable]
 
 ## Blocked Features (Deferred)
-[Features that couldn't be included due to unmet dependencies or capacity]
+[Features that couldn't be included due to unmet dependencies]
 
-1. **[Feature]** ([X] points) — [Feature ID]
-   - **Reason:** Waiting on [dependency ID] or insufficient capacity
+1. **[Feature]** — [Feature ID]
+   - **Reason:** Waiting on [dependency ID]
 
 ## Quick Start
 
@@ -179,24 +179,23 @@ Format the sprint plan with the following structure:
 /vibeflow:status
 ```
 
-## Sprint Notes
-- **Start Date:** [Today's date]
-- **Target End Date:** [Calculated based on duration]
+## Plan Notes
+- **Date:** [Today's date]
 - **Focus:** [Focus area description]
 ```
 
 ---
 
-## Step 8: Present to User
+## Step 9: Present to User
 
-Display the sprint plan and provide next steps:
+Display the development plan and provide next steps:
 
-"I've generated a [duration] sprint plan for [App Name]:
+"I've generated a development plan for [App Name]:
 
-**Sprint Summary:**
-- [X] features selected ([Y] points)
+**Plan Summary:**
+- [X] features selected
 - [Z] features blocked (dependencies)
-- Capacity: [Y] points / [capacity] available
+- Focus: [Focus area]
 
 **Priority Features:**
 1. [Feature 1] — [Deliverables]
@@ -208,45 +207,41 @@ Display the sprint plan and provide next steps:
 ```
 
 Would you like me to:
-1. Save this sprint plan to `specs/sprints/sprint_[N].md`
-2. Adjust the sprint parameters (duration, focus)
+1. Save this development plan to `specs/plans/plan_[N].md`
+2. Adjust the plan parameters (focus area)
 3. Start implementing the first feature
 
-**Tip:** Run `/vibeflow:status` anytime to track progress through the sprint."
+**Tip:** Run `/vibeflow:status` anytime to track progress."
 
 ---
 
 ## Important Notes
 
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
-- **Effort estimation:** Use roadmap values or default to medium (3 points) — see CLAUDE.md
-- **Capacity calculation:** 1 week = 6 points, 2 weeks = 10 points, 1 month = 20 points
 - **Dependency resolution:** Always respect dependencies — a feature cannot be started before its dependencies are done
 - **Priority ordering:** P0 > P1 > P2 within same dependency level — see CLAUDE.md
 - **Status awareness:** Skip features already marked as "done" in roadmap
-- **Blocked features:** Clearly explain why each feature is blocked (missing dependency or capacity)
+- **Blocked features:** Clearly explain why each feature is blocked (missing dependency)
 - **Acceptance criteria:** Provide concrete "done" definition for each feature
-- **Backward compatible:** Works with legacy roadmaps (using default effort values)
-- **Interactive questions:** Use `AskUserQuestion` with clear options for each parameter
+- **Backward compatible:** Works with legacy roadmaps
+- **Interactive questions:** Use `AskUserQuestion` with clear options
 - **Reference:** All specification formats are in CLAUDE.md
 
 ---
 
-## Sprint Planning Algorithm (Detailed)
+## Development Planning Algorithm (Detailed)
 
 **Input:**
 - `features`: Array of feature objects with metadata
-- `duration`: Sprint duration in weeks
 - `focus`: Filter criteria (priority, phase, status)
 
 **Output:**
-- `selected`: Features that fit in sprint
+- `selected`: Features that match criteria
 - `blocked`: Features blocked by dependencies
-- `deferred`: Features deferred due to capacity
+- `deferred`: Features deferred due to focus criteria
 
 **Pseudocode:**
 ```
-capacity = calculate_capacity(duration)
 filtered = filter_features(features, focus)
 sorted = topological_sort(filtered)  # Resolve dependencies
 selected = []
@@ -254,9 +249,8 @@ blocked = []
 deferred = []
 
 for feature in sorted:
-    if can_include(feature, selected, capacity):
+    if can_include(feature, selected):
         selected.append(feature)
-        capacity -= feature.points
     elif dependencies_not_met(feature, selected):
         blocked.append(feature)
     else:
@@ -282,13 +276,9 @@ return selected, blocked, deferred
 **All features done:**
 - Show "All features are complete! Congratulations!"
 - Ask user what they'd like to do:
-  - "Add a new feature" — Guide them to add feature to roadmap (see Step 9: Add New Feature)
+  - "Add a new feature" — Guide them to add feature to roadmap (see Step 10: Add New Feature)
   - "View progress" — Suggest running `/vibeflow:status`
-  - "Plan new sprint" — Re-run sprint planning with different parameters
-
-**No features fit:**
-- Show "Smallest feature ([X] points) exceeds capacity ([Y] points)"
-- Suggest increasing duration
+  - "Plan new development" — Re-run planning with different parameters
 
 **Empty roadmap:**
 - Show "No features found in roadmap."
@@ -296,9 +286,9 @@ return selected, blocked, deferred
 
 ---
 
-## Step 9: Add New Feature (When All Features Done)
+## Step 10: Add New Feature
 
-When all features are complete and the user selects "Add a new feature":
+When the user selects "Add new feature" in Step 2, or when all features are complete:
 
 **1. Gather Feature Details using AskUserQuestion:**
 
@@ -309,13 +299,6 @@ Ask for feature name, then these questions:
 - "P0 - Critical" — Core value features, blocking other features
 - "P1 - Important" — Supporting features, nice to have soon
 - "P2 - Nice to have" — Enhancements, can be deferred
-
-**Question: Effort**
-"How much effort is required for this feature?"
-- "Small (1 point)" — 1-2 days
-- "Medium (3 points)" — 3-5 days — Recommended default
-- "Large (5 points)" — 1-2 weeks
-- "X-Large (8 points)" — 2-4 weeks
 
 **Question: Dependencies**
 "Does this feature depend on any existing features?"
@@ -334,6 +317,13 @@ Ask for feature name, then these questions:
 - "ui" — User interface focus
 - "data" — Data/processing focus
 - "analytics" — Analytics/reporting
+
+**Question: Shared Models**
+"Will this feature introduce models used by 3+ features?"
+- "No" — All models are feature-specific
+- "Yes" — Models will be shared, add to data_shape.md as shared entities
+
+If "Yes", prompt: "Which entities should be shared?" (list entity names)
 
 **2. Generate Feature Spec:**
 
@@ -371,19 +361,29 @@ Create the feature spec file at `/specs/features/[feature_slug]/spec.md`:
 - [Business rules and constraints]
 ```
 
-**3. Update Roadmap:**
+**3. Update Roadmap and Data Shape:**
 
+**Update Roadmap:**
 Append the new feature to `/specs/roadmap.md` with auto-incremented ID:
 
 ```markdown
 ### [Feature Name]
 - **ID:** F[XXX] (next available number)
 - **Priority:** [P0/P1/P2]
-- **Effort:** [small/medium/large/xlarge]
 - **Status:** pending
 - **Dependencies:** [none or F001, F002...]
 - **Phase:** [phase-X]
 - **Tags:** [core, ui, data, analytics...]
+```
+
+**Update Data Shape (if shared models):**
+If the user indicated shared models, update `/specs/data_shape.md`:
+
+```markdown
+## Shared Entities (for lib/core/domain/models/)
+
+### [Shared Entity Name]
+[Description - this entity is used by 3+ features]
 ```
 
 **4. Confirm and Next Steps:**
@@ -394,15 +394,16 @@ Append the new feature to `/specs/roadmap.md` with auto-incremented ID:
 - **Name:** [Feature Name]
 - **ID:** F[XXX]
 - **Priority:** [P0/P1/P2]
-- **Effort:** [X] points
 - **Phase:** [phase-X]
+
+**Shared Models:** [List any shared entities added to data_shape.md, or "None"]
 
 **What's Next:**
 1. Review the generated spec at `/specs/features/[feature_slug]/spec.md`
 2. Run `/vibeflow:feature` to start building
-3. Or run `/vibeflow:sprint` to plan a new sprint
+3. Or run `/vibeflow:plan` to create a new development plan
 
 Would you like to:
 1. Start building this feature now
-2. Plan a new sprint with this feature included
+2. Plan new development with this feature included
 3. Add another feature"
