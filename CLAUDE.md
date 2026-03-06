@@ -194,6 +194,53 @@ Use Cases (prod) → Provider → *_page.dart → *_screen.dart
 - Auto-fetch on initialization
 - CRUD operations refresh data after each action
 
+### Provider Registry Pattern
+
+As features are added, manually updating main.dart becomes error-prone. Use a provider registry pattern:
+
+**Create:** `lib/presentation/providers/provider_registry.dart`
+
+```dart
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+
+// Import feature providers
+// import '[feature]_provider.dart';
+
+class ProviderRegistry {
+  static List<SingleChildWidget> getProviders() {
+    return [
+      // Add feature providers here
+      // ChangeNotifierProvider(
+      //   create: (_) => [Feature]Provider(...),
+      // ),
+
+      // Core providers (settings, theme, etc.)
+      // ChangeNotifierProvider(
+      //   create: (_) => SettingsProvider(...),
+      // ),
+    ];
+  }
+}
+```
+
+**Usage in main.dart:**
+```dart
+void main() {
+  runApp(
+    MultiProvider(
+      providers: ProviderRegistry.getProviders(),
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+**When Building Features:**
+1. Add provider import at top of `provider_registry.dart`
+2. Add provider to `getProviders()` list
+3. No main.dart edits needed after initial setup
+
 ---
 
 ## Core Reference

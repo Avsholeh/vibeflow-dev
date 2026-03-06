@@ -150,6 +150,142 @@ Include:
 - `weights` — All font weight mappings
 - `sizes` — Font size scale
 
+### 4.4: Generate Flutter Theme Code
+
+Create `lib/core/theme/app_theme.dart` that converts the design tokens to Flutter ThemeData:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class AppTheme {
+  // Light Theme
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: _lightColorScheme,
+      textTheme: _lightTextTheme,
+      appBarTheme: _appBarTheme(_lightColorScheme),
+      floatingActionButtonTheme: _fabTheme(_lightColorScheme),
+      cardTheme: _cardTheme(_lightColorScheme),
+    );
+  }
+
+  // Dark Theme
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: _darkColorScheme,
+      textTheme: _darkTextTheme,
+      appBarTheme: _appBarTheme(_darkColorScheme),
+      floatingActionButtonTheme: _fabTheme(_darkColorScheme),
+      cardTheme: _cardTheme(_darkColorScheme),
+    );
+  }
+
+  // Color Schemes (from colors.json)
+  static const ColorScheme _lightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: Color(0xFF[PRIMARY_HEX]),
+    onPrimary: Color(0xFF[ON_PRIMARY_HEX]),
+    primaryContainer: Color(0xFF[PRIMARY_CONTAINER_HEX]),
+    onPrimaryContainer: Color(0xFF[ON_PRIMARY_CONTAINER_HEX]),
+    secondary: Color(0xFF[SECONDARY_HEX]),
+    onSecondary: Color(0xFF[ON_SECONDARY_HEX]),
+    secondaryContainer: Color(0xFF[SECONDARY_CONTAINER_HEX]),
+    onSecondaryContainer: Color(0xFF[ON_SECONDARY_CONTAINER_HEX]),
+    tertiary: Color(0xFF[TERTIARY_HEX]),
+    onTertiary: Color(0xFF[ON_TERTIARY_HEX]),
+    tertiaryContainer: Color(0xFF[TERTIARY_CONTAINER_HEX]),
+    onTertiaryContainer: Color(0xFF[ON_TERTIARY_CONTAINER_HEX]),
+    error: Color(0xFF[ERROR_HEX]),
+    onError: Color(0xFF[ON_ERROR_HEX]),
+    errorContainer: Color(0xFF[ERROR_CONTAINER_HEX]),
+    onErrorContainer: Color(0xFF[ON_ERROR_CONTAINER_HEX]),
+    background: Color(0xFF[BACKGROUND_HEX]),
+    onBackground: Color(0xFF[ON_BACKGROUND_HEX]),
+    surface: Color(0xFF[SURFACE_HEX]),
+    onSurface: Color(0xFF[ON_SURFACE_HEX]),
+    surfaceVariant: Color(0xFF[SURFACE_VARIANT_HEX]),
+    onSurfaceVariant: Color(0xFF[ON_SURFACE_VARIANT_HEX]),
+    outline: Color(0xFF[OUTLINE_HEX]),
+    outlineVariant: Color(0xFF[OUTLINE_VARIANT_HEX]),
+    shadow: Color(0xFF[SHADOW_HEX]),
+    scrim: Color(0xFF[SCRIM_HEX]),
+    inverseSurface: Color(0xFF[INVERSE_SURFACE_HEX]),
+    onInverseSurface: Color(0xFF[ON_INVERSE_SURFACE_HEX]),
+    inversePrimary: Color(0xFF[INVERSE_PRIMARY_HEX]),
+  );
+
+  static const ColorScheme _darkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    // ... (same structure with dark mode colors)
+  );
+
+  // Text Themes (from typography.json)
+  static TextTheme get _lightTextTheme {
+    return GoogleFonts.[PRIMARY_FONT]().copyWith(
+      displayLarge: TextStyle(
+        fontSize: 57,
+        fontWeight: FontWeight.[DISPLAY_WEIGHT],
+        letterSpacing: -0.25,
+        height: 64 / 57,
+      ),
+      headlineLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.[HEADLINE_WEIGHT],
+        letterSpacing: 0,
+        height: 40 / 32,
+      ),
+      // ... (all text styles from typography.json)
+    );
+  }
+
+  static TextTheme get _darkTextTheme => _lightTextTheme;
+
+  // Component Themes
+  static AppBarTheme _appBarTheme(ColorScheme colorScheme) {
+    return AppBarTheme(
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      elevation: 0,
+      centerTitle: true,
+    );
+  }
+
+  static FloatingActionButtonThemeData _fabTheme(ColorScheme colorScheme) {
+    return FloatingActionButtonThemeData(
+      backgroundColor: colorScheme.primary,
+      foregroundColor: colorScheme.onPrimary,
+      elevation: 4,
+    );
+  }
+
+  static CardTheme _cardTheme(ColorScheme colorScheme) {
+    return CardTheme(
+      color: colorScheme.surface,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+
+  // Semantic Colors
+  static const Color success = Color(0xFF[SUCCESS_HEX]);
+  static const Color warning = Color(0xFF[WARNING_HEX]);
+  static const Color info = Color(0xFF[INFO_HEX]);
+}
+```
+
+**Generation Instructions:**
+1. Parse `specs/design_system/colors.json`
+2. Extract all hex values and replace `[XXX_HEX]` placeholders
+3. Parse `specs/design_system/typography.json`
+4. Replace `[PRIMARY_FONT]` with font family name
+5. Replace weight placeholders (e.g., `[DISPLAY_WEIGHT]`) with `FontWeight.wXXX`
+6. Generate the complete file
+
 ---
 
 ## Step 5: Confirm with User
@@ -166,6 +302,7 @@ Files created:
 - `specs/design_system/design_system.md` — Design principles
 - `specs/design_system/colors.json` — Material 3 color tokens
 - `specs/design_system/typography.json` — Material 3 text styles
+- `lib/core/theme/app_theme.dart` — Flutter theme implementation
 
 You can:
 - Manually edit the design system files to customize

@@ -293,6 +293,65 @@ Options:
 
 ---
 
+### 4.6: Generate Main Entry Point
+
+Create `lib/main.dart` with Provider setup and theme configuration:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'core/theme/app_theme.dart';
+import 'presentation/screens/[first_feature]_view.dart';
+
+// TODO: Import feature providers as they are built
+// import 'presentation/providers/[feature]_provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // TODO: Initialize data sources
+  // TODO: Setup repositories
+  // TODO: Setup use cases
+  // TODO: Register providers
+
+  runApp(
+    MultiProvider(
+      providers: [
+        // Add feature providers here as they are built
+        // ChangeNotifierProvider(
+        //   create: (_) => [Feature]Provider(
+        //     [useCase1]: [useCase1],
+        //     [useCase2]: [useCase2],
+        //   ),
+        // ),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '[App Name]',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: const [FirstFeature]View(),
+    );
+  }
+}
+```
+
+**Note:** This is a starter template. As you build features with `/vibeflow:feature`, update the TODO sections to register providers.
+
+---
+
 ## Step 5: Design System Research & Generation
 
 Use AskUserQuestion to present options:
@@ -327,6 +386,7 @@ Present a comprehensive summary:
 - `specs/data_shape.md` — Data entities
 - `specs/features/*/spec.md` — [N] feature specifications
 - `specs/design_system/*` — Design tokens (if theme selected)
+- `lib/main.dart` — App entry point with Provider setup
 
 **Next Steps:**
 

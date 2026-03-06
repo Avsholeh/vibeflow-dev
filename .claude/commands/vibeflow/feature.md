@@ -101,12 +101,24 @@ Generate sample data files for the selected feature:
 
 **⚠️ MANDATORY: Use flutter-ui-design Skill**
 
-Before writing any Flutter UI code, you MUST use the `flutter-ui-design` skill to generate distinctive, production-grade UIs.
+Before writing any Flutter UI code, you MUST invoke the `flutter-ui-design` skill using the Skill tool:
 
-**How to use:**
-- Invoke the skill when implementing screens, widgets, or visual components
-- The skill provides design thinking principles and Flutter aesthetics guidelines
-- Follow the skill's guidance for typography, color, motion, and layout
+**Skill Invocation:**
+```
+Use the Skill tool with:
+- skill: "flutter-ui-design"
+- args: "[Screen description] | Context: [feature context from spec] | Design tokens from specs/design_system/"
+```
+
+**Design Context to Compile:**
+1. Read `specs/design_system/colors.json` - extract primary, secondary, semantic colors
+2. Read `specs/design_system/typography.json` - extract font families and text styles
+3. Read feature spec - understand screen purpose and user flows
+4. Pass this context to the skill for consistent UI generation
+
+**After Skill Returns:**
+- Implement the screen using the design guidance
+- Follow all flutter-ui-design principles (bold aesthetics, characterful typography, etc.)
 
 Then create screen widgets:
 - Read feature spec and sample data
@@ -134,7 +146,113 @@ Create business logic following Clean Architecture:
 **Presentation Layer:**
 - Providers in `lib/presentation/providers/`
 
-**Note:** If generating entities in `lib/domain/entities/`, check if the entity file already exists. If it does, import the existing entity instead of creating a duplicate.
+**Entity Deduplication & Merge Algorithm:**
+
+When generating entities in `lib/domain/entities/`:
+
+1. **Check if entity exists:**
+   ```bash
+   lib/domain/entities/[entity_name].dart
+   ```
+
+2. **If entity doesn't exist:**
+   - Create new entity file with all properties
+   - Proceed to next entity
+
+3. **If entity exists:**
+   - Read the existing entity file
+   - Parse current properties (name, type, nullable)
+   - Compare with new properties from spec
+
+4. **Merge Decision:**
+   - **If properties match exactly:** Use existing entity, skip generation
+   - **If new properties added:** Append new properties to existing entity
+   - **If properties conflict:** Ask user using AskUserQuestion:
+     ```
+     "Entity [EntityName] already exists with different properties:
+     Existing: [list existing]
+     New: [list new]
+     What would you like to do?"
+     Options:
+     1. "Keep existing" — Use existing entity as-is
+     2. "Merge properties" — Add new properties to existing
+     3. "Replace with new" — Overwrite existing entity
+     ```
+
+5. **After merge:**
+   - Update the entity file with merged properties
+   - Add comment if properties were merged: `// Merged on [date]`
+
+**Example Merge:**
+```dart
+// Existing: task.dart
+class Task {
+  final String id;
+  final String title;
+  final bool isCompleted;
+}
+
+// After merge (adding description, createdAt):
+class Task {
+  final String id;
+  final String title;
+  final bool isCompleted;
+  final String? description;      // NEW
+  final DateTime createdAt;        // NEW
+}
+```
+
+### Phase 4.5: Update Routing
+
+After generating screens, update the app routing:
+
+**1. Create/Update:** `lib/presentation/routes/app_routes.dart`
+
+```dart
+import 'package:flutter/material.dart';
+import '../screens/[feature]_screen.dart';
+// ... other screen imports
+
+class AppRoutes {
+  static const String [FEATURE_ROUTE] = '/[feature]';
+  // Add other routes
+
+  static Map<String, WidgetBuilder> getRoutes() {
+    return {
+      [FEATURE_ROUTE]: (context) => const [Feature]Page(),
+      // Add other routes
+    };
+  }
+
+  static Route<T>? onGenerateRoute<T>(RouteSettings settings) {
+    switch (settings.name) {
+      case [FEATURE_ROUTE]:
+        return MaterialPageRoute(builder: (context) => const [Feature]Page());
+      // Add other cases
+      default:
+        return null;
+    }
+  }
+}
+```
+
+**2. Update main.dart (if first feature):**
+```dart
+MaterialApp(
+  // ...
+  initialRoute: AppRoutes.[FEATURE_ROUTE],
+  onGenerateRoute: AppRoutes.onGenerateRoute,
+  // or
+  routes: AppRoutes.getRoutes(),
+)
+```
+
+**3. For navigation between features:**
+```dart
+Navigator.pushNamed(context, AppRoutes.[FEATURE_ROUTE]);
+```
+
+**Note:** The [Feature]Page wraps [Feature]Screen with Provider connectivity.
 
 ### Phase 5: Code Quality Check
 
