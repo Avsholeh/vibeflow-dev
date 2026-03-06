@@ -64,12 +64,10 @@ Check `specs/roadmap.md`:
 
 **Required format:**
 - Features section with ## Features heading
-- Each feature has numbered heading (### 1., ### 2., etc. or #### 1., #### 2., etc. under groups)
+- Each feature has numbered heading (### 1., ### 2., etc.)
 - Each feature has metadata fields:
   - ID (F### format)
-  - Group (optional - lowercase with underscore)
   - Priority (P0, P1, or P2)
-  - Effort (optional - small, medium, large, or xlarge; for informational purposes only)
   - Status (pending, started, in_progress, done, or blocked)
   - Dependencies (none or F###, F### list)
   - Phase (phase-1, phase-2, etc.)
@@ -81,9 +79,6 @@ Check `specs/roadmap.md`:
 - All dependencies reference valid feature IDs
 - Status values are valid
 - Priority values are valid
-- Effort values are valid (if present)
-- Group slugs are valid format (lowercase, underscore only) - if present
-- Group sections have proper headings (if groups are used)
 
 **Report:**
 - ✅ Valid — [N] features with valid metadata
@@ -92,9 +87,6 @@ Check `specs/roadmap.md`:
   - Invalid dependencies: [list]
   - Invalid status values: [list]
   - Invalid priority values: [list]
-  - Invalid effort values: [list]
-  - Invalid group slugs: [list]
-  - Inconsistent group formatting: [list]
 - ❌ Not found or malformed
 
 ---
@@ -160,10 +152,7 @@ Check if design system files exist:
 
 Check each feature directory in `specs/features/`:
 
-**For grouped features:**
-- Check `specs/features/[group_slug]/[feature_slug]/` directories
-
-**For ungrouped features:**
+**For each feature:**
 - Check `specs/features/[feature_slug]/` directories
 
 For each feature directory:
@@ -174,9 +163,9 @@ For each feature directory:
 **Report:**
 - ✅ All features valid — [N] features complete
 - ⚠️ Feature issues:
-  - [Group/Feature]: Missing spec.md
-  - [Group/Feature]: Invalid data.json
-  - [Group/Feature]: Missing models.md
+  - [Feature]: Missing spec.md
+  - [Feature]: Invalid data.json
+  - [Feature]: Missing models.md
 - ❌ No features found
 
 ---

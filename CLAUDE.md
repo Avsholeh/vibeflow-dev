@@ -1,6 +1,6 @@
 # Agent Directives for VibeFlow
 
-VibeFlow is an **AI-powered Flutter development workflow** that helps you define your product vision, sketch data shapes, and implement beautiful Flutter UIs directly in your codebase using feature-first modular architecture.
+VibeFlow is an **AI-powered Flutter development workflow** that helps you define your product vision, sketch data shapes, and implement beautiful Flutter UIs directly in your codebase using Clean Architecture.
 
 ---
 
@@ -120,68 +120,54 @@ This ensures all VibeFlow UIs are distinctive and production-grade, avoiding gen
 ### The Core Components
 
 1. **Product Overview** — What & why of the Flutter app
-2. **Data Shape** — Domain models & relationships (Dart classes later)
+2. **Data Shape** — Domain entities & relationships (Dart classes later)
 3. **Design System** — Colors → `ColorScheme`, Fonts → `TextTheme` via google_fonts
-4. **Features** — Independent feature modules with clean architecture layers
+4. **Features** — Feature specifications that map to Clean Architecture layers
 
-### Feature-First Architecture Principles
+### Clean Architecture Principles
 
-- **Features are independent** — Each feature is a self-contained module
-- **Clean Architecture layers** — data/, domain/, screens/, widgets/, providers/ within each feature
-- **Core for shared** — Shared models (3+ features), widgets, routing, theme go in `core/`
-- **Repository pattern** — Interfaces in domain/, implementations in data/
-- **Props-driven widgets** — All data received via constructor, callbacks via constructor parameters
+VibeFlow follows **Uncle Bob's Clean Architecture** with pure layer separation:
 
-### Cross-Feature Model Sharing
+**Dependency Rule:** Dependencies point inward only — outer layers depend on inner layers, but inner layers know nothing about outer layers.
 
-VibeFlow uses **shared models in `core/`** to handle cross-feature dependencies:
-
-| Scenario | Location | Example |
-|----------|----------|---------|
-| Model used by 3+ features | `lib/core/domain/models/` | `User`, `Transaction`, `Category` |
-| Model used by 2 features | First feature's domain | `auth/user.dart` → imported by `profile` |
-| One-way dependency | Import from owner | `todos` imports from `auth` |
-| Circular dependency | Extract to core | A→B, B→A → extract shared models |
-
-**Key Principles:**
-1. **Shared domain models** go in `lib/core/domain/models/`
-2. **Feature-specific models** stay in `lib/features/[feature]/domain/models/`
-3. **Import direction** should be one-way (avoid circular dependencies)
-4. **When in doubt**, extract to `core/` — it's easier to move than to refactor later
-
-### Hierarchical Feature Organization
-
-VibeFlow supports **grouping related features** for better project organization:
-
-**When to use groups:**
-- Multiple features share similar functionality (e.g., multiple backup integrations)
-- Features are logically related (e.g., all task-related features)
-- You want to organize features by domain area (e.g., auth, billing, settings)
-
-**How it works:**
-- Features in the same group are placed under a shared directory: `features/[group]/[feature]/`
-- Each feature remains independent with its own architecture layers
-- Groups are purely organizational — they don't affect how features communicate
-
-**Example structure:**
 ```
-features/
-├── tasks/
-│   ├── add_task/
-│   │   ├── domain/
-│   │   ├── data/
-│   │   ├── screens/
-│   │   └── providers/
-│   └── edit_task/
-│       ├── domain/
-│       └── ...
-├── backup/
-│   ├── google_drive/
-│   └── dropbox/
-└── notifications/
-    ├── email/
-    └── push/
+┌─────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                       │
+│  (Screens, Widgets, Providers) → depends on Domain           │
+├─────────────────────────────────────────────────────────────┤
+│                       Domain Layer                          │
+│           (Entities, Repositories, Use Cases)                │
+│                   ← depends on nothing                      │
+├─────────────────────────────────────────────────────────────┤
+│                        Data Layer                            │
+│   (Repository Implementations, Data Sources, DTOs)           │
+│              → depends on Domain                             │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+**Layer Responsibilities:**
+
+- **Domain Layer** (`lib/domain/`) — Core business logic, completely independent
+  - `entities/` — Business objects (Note, User, Transaction)
+  - `repositories/` — Repository interfaces (abstract contracts)
+  - `usecases/` — Business logic operations (GetNotes, CreateNote)
+
+- **Data Layer** (`lib/data/`) — External data access, implements domain contracts
+  - `repositories/` — Repository implementations (NoteRepositoryImpl)
+  - `datasources/` — Data sources (LocalDataSource, RemoteDataSource)
+  - `models/` — DTOs for data transfer (NoteDTO)
+
+- **Presentation Layer** (`lib/presentation/`) — UI and state management
+  - `screens/` — All screens (NoteListScreen, CreateNoteScreen)
+  - `widgets/` — Shared reusable widgets (NoteCard, SearchBar)
+  - `providers/` — State management with Provider pattern
+  - `routes/` — Navigation/routing configuration
+
+- **Core Layer** (`lib/core/`) — Shared utilities and configuration
+  - `theme/` — Design system tokens and theme configuration
+  - `constants/` — App-wide constants
+  - `utils/` — Helper functions
+  - `services/` — Global services (navigation, analytics)
 
 ### State Management Architecture
 
@@ -190,7 +176,7 @@ VibeFlow uses a **props-driven, provider-based** state management pattern that k
 **Data Flow:**
 ```
 data.json (dev) → *_view.dart → *_screen.dart
-Repository (prod) → Provider → *_page.dart → *_screen.dart
+Use Cases (prod) → Provider → *_page.dart → *_screen.dart
 ```
 
 **Three-File Pattern:**
@@ -203,6 +189,7 @@ Repository (prod) → Provider → *_page.dart → *_screen.dart
 **Key Pattern:**
 - Props-driven widgets (all data via constructor)
 - Provider pattern with ChangeNotifier
+- Use cases encapsulate business logic
 - Repository pattern (interfaces in domain/, implementations in data/)
 - Auto-fetch on initialization
 - CRUD operations refresh data after each action
@@ -219,21 +206,15 @@ Convert feature names to slugs using these rules:
 - Remove special characters
 - Keep words intact
 
-**Examples (without group):**
+**Examples:**
 - "Dashboard" → `dashboard`
 - "User Management" → `user_management`
 - "Add Transaction Flow" → `add_transaction_flow`
 - "Due Dates & Reminders" → `due_dates_reminders`
 
-**Examples (with group):**
-- Group: "Tasks" → `tasks`
-- Group: "Google Drive" → `google_drive`
-- Feature: "Add Task" → `add_task`
-- Combined: `tasks/add_task`
-
 **Feature path construction:**
-- **With group:** `[group_slug]/[feature_slug]` → `specs/features/tasks/add_task/`
-- **Without group:** `[feature_slug]` → `specs/features/add_task/`
+- **Spec path:** `[feature_slug]` → `specs/features/add_task/`
+- **Implementation:** Distributed across layers (no feature folders)
 
 ---
 
@@ -244,8 +225,8 @@ Convert feature names to slugs using these rules:
 progress = (spec_complete * 25) +
            (sample_data * 25) +
            (types_documented * 10) +
-           (models_defined * 20) +
-           (logic_implemented * 15) +
+           (entities_defined * 20) +
+           (usecases_implemented * 15) +
            (screens_implemented * 10)
 ```
 
@@ -260,17 +241,15 @@ progress = (spec_complete * 25) +
 
 **File Checks:**
 
-**Note:** `[feature_path]` is `[group_slug]/[feature_slug]` for grouped features, or `[feature_slug]` for ungrouped features.
-
 *Spec Status:*
-- `/specs/features/[feature_path]/spec.md` exists → Spec complete (+25%)
-- `/specs/features/[feature_path]/data.json` exists → Sample data (+25%)
-- `/specs/features/[feature_path]/models.md` exists → Types documented (+10%)
+- `/specs/features/[feature_slug]/spec.md` exists → Spec complete (+25%)
+- `/specs/features/[feature_slug]/data.json` exists → Sample data (+25%)
+- `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
 
 *Implementation Status:*
-- `/lib/features/[feature_path]/domain/models/` has .dart files → Models defined (+20%)
-- `/lib/features/[feature_path]/providers/` has non-empty .dart files → Logic implemented (+15%)
-- `/lib/features/[feature_path]/screens/*_page.dart` files exist → Screens implemented (+10%)
+- `/lib/domain/entities/` has entity .dart files → Entities defined (+20%)
+- `/lib/domain/usecases/` has use case .dart files → Use cases implemented (+15%)
+- `/lib/presentation/screens/` has screen .dart files → Screens implemented (+10%)
 
 ---
 
@@ -300,59 +279,12 @@ progress = (spec_complete * 25) +
 
 ### Roadmap Format
 
-**For grouped features (recommended for related features):**
-
 ```markdown
 # Product Roadmap
 
 ## Features
 
-### Group: Tasks
-
-#### 1. Add Task
-- **ID:** F001
-- **Group:** tasks
-- **Priority:** P0
-- **Status:** pending
-- **Dependencies:** none
-- **Phase:** phase-1
-- **Tags:** core
-
-Quick task creation with title and description.
-
-#### 2. Edit Task
-- **ID:** F002
-- **Group:** tasks
-- **Priority:** P1
-- **Status:** pending
-- **Dependencies:** F001
-- **Phase:** phase-1
-- **Tags:** core
-
-Edit existing task details.
-
-### Group: Backup
-
-#### 3. Google Drive Backup
-- **ID:** F003
-- **Group:** backup
-- **Priority:** P1
-- **Status:** pending
-- **Dependencies:** none
-- **Phase:** phase-2
-- **Tags:** integration
-
-Backup data to Google Drive.
-```
-
-**For flat structure (no groups):**
-
-```markdown
-# Product Roadmap
-
-## Features
-
-### 1. Dashboard
+### 1. Note List
 - **ID:** F001
 - **Priority:** P0
 - **Status:** pending
@@ -360,9 +292,9 @@ Backup data to Google Drive.
 - **Phase:** phase-1
 - **Tags:** core, ui
 
-The main screen showing balance and recent activity.
+The main screen displaying all notes in a scrollable list.
 
-### 2. Add Transaction
+### 2. Create Note
 - **ID:** F002
 - **Priority:** P0
 - **Status:** pending
@@ -370,21 +302,28 @@ The main screen showing balance and recent activity.
 - **Phase:** phase-1
 - **Tags:** core
 
-A form for quick transaction entry with amount, category, and notes.
+Quick note creation screen with title and content.
+
+### 3. Edit Note
+- **ID:** F003
+- **Priority:** P0
+- **Status:** pending
+- **Dependencies:** F002
+- **Phase:** phase-1
+- **Tags:** core
+
+Edit existing notes with delete functionality.
 ```
 
 **Metadata Fields:**
 | Field | Type | Values | Description |
 |-------|------|--------|-------------|
 | `ID` | string | F001, F002, F003... (auto-generated) | Unique feature identifier |
-| `Group` | string | tasks, backup, etc. (optional) | Logical grouping for hierarchical organization |
 | `Priority` | enum | P0, P1, P2 | Development priority |
 | `Status` | enum | pending, started, in_progress, done, blocked | Implementation status |
 | `Dependencies` | list | F001, F002... or "none" | Feature IDs this feature depends on |
 | `Phase` | string | phase-1, phase-2... | Release phase assignment |
 | `Tags` | list | core, ui, data, analytics... | Optional categorization |
-
-**Note:** The `Effort` field may be present in existing roadmaps for informational purposes but is no longer used for capacity calculations.
 
 ---
 
@@ -395,31 +334,31 @@ A form for quick transaction entry with amount, category, and notes.
 
 ## Entities
 
-### Task
-The core entity representing a single todo item with all its properties.
+### Note
+The core entity representing a single note.
 
 **Properties:**
 - `id` — Unique identifier
-- `title` — Task name (required)
-- `description` — Additional details (optional)
-- `isCompleted` — Completion status
-- `categoryId` — Reference to category (optional)
+- `title` — Note title (optional)
+- `content` — Note body text (required)
+- `color` — Visual color tag (optional)
 - `createdAt` — Creation timestamp
-- `completedAt` — Completion timestamp (optional)
+- `updatedAt` — Last modification timestamp
 
-### Category
-A classification for organizing related tasks together.
+### User
+App user with authentication and preferences.
 
 **Properties:**
 - `id` — Unique identifier
-- `name` — Category display name
-- `color` — Visual identifier for UI
-- `icon` — Optional icon for visual distinction
+- `email` — Email address
+- `displayName` — Display name
+- `preferences` — User settings
+- `createdAt` — Account creation timestamp
 
 ## Relationships
 
-- Task belongs to Category (optional)
-- Category has many Tasks
+- Note belongs to User
+- User has many Notes
 ```
 
 ---
@@ -467,19 +406,19 @@ A classification for organizing related tasks together.
 # Design System — [App Name]
 
 ## Aesthetic
-[Description of visual style - e.g., "Clean, minimal, refined with subtle borders"]
+[Description of visual style]
 
 ## Color Philosophy
-[How colors are used - e.g., "Subtle borders, purposeful color accents for CTAs"]
+[How colors are used]
 
 ## Typography Philosophy
-[Font choices and readability considerations - e.g., "Geometric sans for headings, readable serif for body"]
+[Font choices and readability]
 
 ## Component Patterns
-[Key UI patterns - e.g., "Cards with subtle borders", "Rounded buttons", "Floating panels"]
+[Key UI patterns]
 
 ## Motion & Interaction
-[Animation and interaction patterns - e.g., "Micro-interactions on hover", "Smooth page transitions"]
+[Animation patterns]
 ```
 
 #### Colors JSON (`specs/design_system/colors.json`)
@@ -687,12 +626,11 @@ A classification for organizing related tasks together.
 
 ### Spec Files
 
-**For grouped features (recommended for related features):**
 ```
 specs/
 ├── overview.md                    # Product overview
 ├── roadmap.md                     # Feature roadmap
-├── data_shape.md                  # Data models & relationships
+├── data_shape.md                  # Data entities & relationships
 ├── design_system/
 │   ├── design_system.md          # Design aesthetic & principles
 │   ├── colors.json                # Color tokens for light/dark modes
@@ -700,121 +638,160 @@ specs/
 ├── plans/                         # Development plans
 │   └── plan_[N].md                # Auto-generated plan files
 └── features/
-    ├── [group_slug]/             # Feature group (optional)
-    │   └── [feature_slug]/
-    │       ├── spec.md            # Feature specification
-    │       ├── data.json          # Sample data
-    │       └── models.md          # Domain models & props
-    └── [feature_slug]/           # Standalone feature
-        ├── spec.md
-        ├── data.json
-        └── models.md
-```
-
-**For flat structure (no groups):**
-```
-specs/
-├── overview.md
-├── roadmap.md
-├── data_shape.md
-├── design_system/
-│   ├── design_system.md
-│   ├── colors.json
-│   └── typography.json
-├── plans/                         # Development plans
-│   └── plan_[N].md                # Auto-generated plan files
-└── features/
     └── [feature_slug]/
         ├── spec.md                # Feature specification
         ├── data.json              # Sample data
-        └── models.md              # Domain models & props
+        └── models.md              # Domain entities & props
 ```
 
-### Implementation Files
+### Implementation Files (Clean Architecture)
 
-**For grouped features:**
 ```
-lib/features/
-├── [group_slug]/                 # Feature group
-│   └── [feature_slug]/
-│       ├── domain/
-│       │   ├── models/
-│       │   │   └── [model].dart         # Feature-specific models only
-│       │   └── repositories/
-│       │       └── [feature]_repository.dart
-│       ├── data/
-│       │   ├── datasources/
-│       │   │   └── [feature]_datasource.dart
-│       │   └── repositories/
-│       │       └── [feature]_repository_impl.dart
-│       ├── providers/
-│       │   └── [feature]_provider.dart
-│       ├── screens/
-│       │   ├── [screen]_screen.dart    # Pure UI (props-driven)
-│       │   ├── [screen]_view.dart      # Dev wrapper (data.json)
-│       │   └── [screen]_page.dart      # Production wrapper (Provider)
-│       ├── widgets/
-│       │   └── [widget].dart
-│       └── routes.dart
-└── [feature_slug]/               # Standalone feature
-    └── ...
-```
-
-**For flat structure (no groups):**
-```
-lib/features/
-└── [feature_slug]/
-    ├── domain/
-    │   ├── models/
-    │   │   └── [model].dart         # Feature-specific models only
-    │   └── repositories/
-    │       └── [feature]_repository.dart
-    ├── data/
-    │   ├── datasources/
-    │   │   └── [feature]_datasource.dart
-    │   └── repositories/
-    │       └── [feature]_repository_impl.dart
-    ├── providers/
-    │   └── [feature]_provider.dart
-    ├── screens/
-    │   ├── [screen]_screen.dart    # Pure UI (props-driven)
-    │   ├── [screen]_view.dart      # Dev wrapper (data.json)
-    │   └── [screen]_page.dart      # Production wrapper (Provider)
-    ├── widgets/
-    │   └── [widget].dart
-    └── routes.dart
-
-lib/core/
+lib/
 ├── domain/
-│   └── models/
-│       ├── user.dart           # Shared models (used by 3+ features)
-│       ├── transaction.dart    # Shared domain entities
-│       └── category.dart       # Shared business concepts
-├── widgets/                     # Shared widgets
-├── routing/                     # App routing
-└── theme/                       # App theme configuration
+│   ├── entities/
+│   │   ├── note.dart
+│   │   ├── user.dart
+│   │   └── transaction.dart
+│   ├── repositories/
+│   │   ├── note_repository.dart
+│   │   ├── user_repository.dart
+│   │   └── transaction_repository.dart
+│   └── usecases/
+│       ├── get_notes.dart
+│       ├── create_note.dart
+│       ├── update_note.dart
+│       ├── delete_note.dart
+│       └── search_notes.dart
+├── data/
+│   ├── models/
+│   │   ├── note_dto.dart
+│   │   └── user_dto.dart
+│   ├── repositories/
+│   │   ├── note_repository_impl.dart
+│   │   └── user_repository_impl.dart
+│   └── datasources/
+│       ├── note_local_datasource.dart
+│       ├── note_remote_datasource.dart
+│       └── user_datasource.dart
+├── presentation/
+│   ├── screens/
+│   │   ├── note_list_screen.dart
+│   │   ├── note_list_view.dart
+│   │   ├── note_list_page.dart
+│   │   ├── create_note_screen.dart
+│   │   ├── create_note_view.dart
+│   │   ├── create_note_page.dart
+│   │   ├── edit_note_screen.dart
+│   │   ├── note_details_screen.dart
+│   │   └── settings_screen.dart
+│   ├── widgets/
+│   │   ├── note_card.dart
+│   │   ├── search_bar.dart
+│   │   └── empty_state.dart
+│   ├── providers/
+│   │   ├── note_list_provider.dart
+│   │   ├── create_note_provider.dart
+│   │   └── settings_provider.dart
+│   └── routes/
+│       └── app_routes.dart
+└── core/
+    ├── theme/
+    │   └── app_theme.dart
+    ├── constants/
+    │   ├── app_colors.dart
+    │   ├── app_strings.dart
+    │   └── app_assets.dart
+    ├── utils/
+    │   ├── date_formatter.dart
+    │   └── validators.dart
+    └── services/
+        ├── navigation_service.dart
+        └── storage_service.dart
 ```
 
-**Shared Models Rule:** When a model is used by 3 or more features, place it in `lib/core/domain/models/` instead of within a specific feature. This prevents circular dependencies and promotes code reuse.
+**Key Principles:**
+- All domain entities in `lib/domain/entities/`
+- Repository interfaces in `lib/domain/repositories/`
+- Repository implementations in `lib/data/repositories/`
+- Use cases in `lib/domain/usecases/` for business logic
+- All screens in `lib/presentation/screens/`
+- Shared widgets in `lib/presentation/widgets/`
+- Providers in `lib/presentation/providers/`
+
+---
+
+## Use Cases Pattern Template
+
+Use cases encapsulate single business operations. They depend on repository interfaces and are used by providers.
+
+```dart
+// lib/domain/usecases/get_notes.dart
+class GetNotesUseCase {
+  final NoteRepository _repository;
+
+  GetNotesUseCase(this._repository);
+
+  Future<List<Note>> execute() async {
+    return await _repository.getNotes();
+  }
+}
+
+// lib/domain/usecases/create_note.dart
+class CreateNoteUseCase {
+  final NoteRepository _repository;
+
+  CreateNoteUseCase(this._repository);
+
+  Future<Note> execute(Note note) async {
+    return await _repository.createNote(note);
+  }
+}
+
+// lib/domain/usecases/search_notes.dart
+class SearchNotesUseCase {
+  final NoteRepository _repository;
+
+  SearchNotesUseCase(this._repository);
+
+  Future<List<Note>> execute(String query) async {
+    final notes = await _repository.getNotes();
+    return notes.where((note) =>
+      note.title.toLowerCase().contains(query.toLowerCase()) ||
+      note.content.toLowerCase().contains(query.toLowerCase())
+    ).toList();
+  }
+}
+```
 
 ---
 
 ## Provider State Pattern Template
 
+Providers use use cases for business logic and manage UI state.
+
 ```dart
+// lib/presentation/providers/note_list_provider.dart
 import 'package:flutter/foundation.dart';
+import '../../domain/usecases/get_notes.dart';
+import '../../domain/usecases/delete_note.dart';
+import '../../domain/entities/note.dart';
 
-class [FeatureName]Provider extends ChangeNotifier {
-  final [FeatureName]Repository _repository;
+class NoteListProvider extends ChangeNotifier {
+  final GetNotesUseCase _getNotesUseCase;
+  final DeleteNoteUseCase _deleteNoteUseCase;
 
-  [FeatureName]Provider({required [FeatureName]Repository repository})
-      : _repository = repository {
-    fetch[Model]s(); // Auto-load on initialization
+  NoteListProvider({
+    required GetNotesUseCase getNotesUseCase,
+    required DeleteNoteUseCase deleteNoteUseCase,
+  })  : _getNotesUseCase = getNotesUseCase,
+        _deleteNoteUseCase = deleteNoteUseCase {
+    fetchNotes();
   }
 
   // State
-  List<[Model]> _items = [];
-  List<[Model]> get items => _items;
+  List<Note> _notes = [];
+  List<Note> get notes => _notes;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -824,12 +801,12 @@ class [FeatureName]Provider extends ChangeNotifier {
   bool get hasError => _error != null;
 
   // Initial data fetch
-  Future<void> fetch[Model]s() async {
+  Future<void> fetchNotes() async {
     _setLoading(true);
     _clearError();
 
     try {
-      _items = await _repository.get[Model]s();
+      _notes = await _getNotesUseCase.execute();
       _setLoading(false);
       notifyListeners();
     } catch (e) {
@@ -839,39 +816,13 @@ class [FeatureName]Provider extends ChangeNotifier {
     }
   }
 
-  // CRUD operations
-  Future<void> create[Model]([Model] [model]) async {
-    _setLoading(true);
+  // Delete operation
+  Future<void> deleteNote(String id) async {
     _clearError();
 
     try {
-      await _repository.create[Model]([model]);
-      await fetch[Model]s(); // Refresh data
-    } catch (e) {
-      _setError(e.toString());
-      _setLoading(false);
-      notifyListeners();
-    }
-  }
-
-  Future<void> update[Model]([Model] [model]) async {
-    _clearError();
-
-    try {
-      await _repository.update[Model]([model]);
-      await fetch[Model]s(); // Refresh data
-    } catch (e) {
-      _setError(e.toString());
-      notifyListeners();
-    }
-  }
-
-  Future<void> delete[Model](String id) async {
-    _clearError();
-
-    try {
-      await _repository.delete[Model](id);
-      await fetch[Model]s(); // Refresh data
+      await _deleteNoteUseCase.execute(id);
+      await fetchNotes(); // Refresh data
     } catch (e) {
       _setError(e.toString());
       notifyListeners();
@@ -909,9 +860,9 @@ Create a new Flutter app with complete specification files.
 4. Optionally generates design system files
 
 **Generated files:**
-- See [File Structure Patterns > Spec Files](#file-structure-patterns) for complete structure
 - `specs/overview.md`, `specs/roadmap.md`, `specs/data_shape.md`
-- `specs/features/[feature_name]/spec.md` for each feature
+- `specs/features/[feature_slug]/spec.md` for each feature
+- `specs/design_system/*` (if theme selected)
 
 ---
 
@@ -925,13 +876,7 @@ Set up design system with research-based theme recommendations.
 3. Presents 3-4 theme options with research-backed explanations
 4. Generates full Material 3 colors.json and typography.json
 
-**Example options presented:**
-- **Professional Trust** — Blue/Gray palette for trust-sensitive apps
-- **Modern Productivity** — Indigo/Purple for SaaS tools
-- **Calm Focus** — Green/Emerald for wellness and productivity
-
 **Generated files:**
-- See [File Structure Patterns > Spec Files](#file-structure-patterns) for complete structure
 - `specs/design_system/design_system.md`
 - `specs/design_system/colors.json`
 - `specs/design_system/typography.json`
@@ -945,20 +890,20 @@ Build a complete feature with sample data, screens, and business logic.
 **What it does:**
 1. Lists available features from roadmap
 2. Checks feature dependencies
-3. Generates in 4 phases:
+3. Generates in phases:
    - **Phase 1:** Sample data (data.json, models.md)
    - **Phase 2:** Screens (screen, view, page files) — Uses `flutter-ui-design` skill
-   - **Phase 3:** Business logic (models, repositories, providers)
-   - **Phase 4:** Updates feature status to `in_progress`
-
-**Model placement:**
-- Shared models (3+ features) → `lib/core/domain/models/`
-- Feature-specific models → `lib/features/[feature_slug]/domain/models/`
+   - **Phase 3:** Business logic (entities, repositories, use cases, providers)
+   - **Phase 4:** Updates feature status
 
 **Generated files:**
-- See [File Structure Patterns](#file-structure-patterns) for complete structure
-- Shared models (3+ features) → `lib/core/domain/models/`
-- Feature-specific models → `lib/features/[feature_slug]/domain/models/`
+- Entities in `lib/domain/entities/`
+- Repository interfaces in `lib/domain/repositories/`
+- Use cases in `lib/domain/usecases/`
+- Repository implementations in `lib/data/repositories/`
+- Data sources in `lib/data/datasources/`
+- Providers in `lib/presentation/providers/`
+- Screens in `lib/presentation/screens/`
 
 ---
 
@@ -978,9 +923,9 @@ View implementation progress across all features.
 | `spec.md` exists | +25% |
 | `data.json` exists | +25% |
 | `models.md` exists | +10% |
-| Domain models exist | +20% |
-| Logic implemented | +15% |
-| Screens implemented | +10% |
+| Entities exist | +20% |
+| Use cases exist | +15% |
+| Screens exist | +10% |
 
 ---
 
@@ -994,9 +939,6 @@ Create development plans based on priorities and dependencies.
 3. Resolves dependencies using topological sort
 4. Orders features by priority (P0 > P1 > P2)
 5. Generates development plan
-
-**Questions asked:**
-1. Focus area (P0 only, specific phase, all pending, in-progress)
 
 ---
 
@@ -1033,7 +975,7 @@ When implementing Flutter screens and widgets:
 - **Light & Dark Mode** — Always respect `Theme.of(context).brightness`. Use `ColorScheme` for semantic colors.
 - **Use Design Tokens** — Map `colors.json` → `ColorScheme.fromSeed(seedColor: primary)`, custom extensions for semantic colors (success, warning, etc.). Use `GoogleFonts.[font]()` for `TextTheme`.
 - **Props-Driven Widgets** — All widgets receive data & callbacks via constructor (`final` fields). Never import `data.json` in production widgets — only in development view wrappers.
-- **Each Screen Manages Its Own Scaffold** — Feature screens include their own `Scaffold`, `AppBar`, and navigation elements. Use shared widgets from `core/widgets/` for consistency.
+- **Each Screen Manages Its Own Scaffold** — Feature screens include their own `Scaffold`, `AppBar`, and navigation elements. Use shared widgets from `presentation/widgets/` for consistency.
 - **Bold Aesthetics** — Strictly follow the `flutter-ui-design` skill: commit to one extreme visual direction (brutal minimal, maximalist joy, retro-futurist, luxury restraint, etc.). Use `AnimatedSwitcher`, `Hero`, `flutter_animate`, `CustomPaint`, shaders, clippers, etc. Avoid generic Material 3 look.
 
 ### Flutter-Specific Guidelines

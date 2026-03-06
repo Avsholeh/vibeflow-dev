@@ -70,13 +70,6 @@ Identify the main areas/sections of the product:
 
 - "What are the main areas or screens of this product? (e.g., Dashboard, Settings, Invoices)"
 - "What would you consider the most critical area to build first?"
-- "Are there any areas that should be separate from the core functionality?"
-- **Group Detection:** Look for keywords that suggest feature groups:
-  - "backup", "export", "integration" → `backup` group
-  - "task", "todo", "item" → `tasks` group
-  - "notification", "email", "alert" → `notifications` group
-  - "auth", "login", "user" → `auth` group
-  - "settings", "config", "preferences" → `settings` group
 
 ### Data Shape Questions
 
@@ -87,11 +80,13 @@ Identify the core entities ("nouns") of the product:
 
 The goal is to gather enough information for all three files before proceeding. Don't need exhaustive detail on every entity — just the core nouns and their relationships.
 
+---
+
 ## Step 4: Generate Product Specs
 
 **Immediately create** all spec files with smart defaults.
 
-### 3.1: Product Overview
+### 4.1: Product Overview
 
 Create `specs/overview.md` with:
 
@@ -123,7 +118,7 @@ Create `specs/overview.md` with:
 
 ---
 
-### 3.2: Roadmap
+### 4.2: Roadmap
 
 **Immediately create** `specs/roadmap.md` with simple format:
 
@@ -133,57 +128,6 @@ Create `specs/overview.md` with:
 - App description (extract verbs/nouns)
 - Mobile app patterns (auth, dashboard, lists, forms, settings)
 
-**Detect feature groups** from related features:
-- Multiple backup-related features → `backup` group
-- Multiple task-related features → `tasks` group
-- Multiple notification features → `notifications` group
-
-**Generate 3-6 features** using the grouped format (when groups are detected):
-
-```markdown
-# Product Roadmap
-
-## Features
-
-### Group: [Group Name]
-
-#### 1. [Core Feature 1]
-- **ID:** F001
-- **Group:** [group_slug]
-- **Priority:** P0
-- **Status:** pending
-- **Dependencies:** none
-- **Phase:** phase-1
-- **Tags:** core
-
-[Description...]
-
-#### 2. [Core Feature 2]
-- **ID:** F002
-- **Group:** [group_slug]
-- **Priority:** P0
-- **Status:** pending
-- **Dependencies:** none
-- **Phase:** phase-1
-- **Tags:** core
-
-[Description...]
-
-### Group: [Another Group]
-
-#### 3. [Supporting Feature]
-- **ID:** F003
-- **Group:** [another_group_slug]
-- **Priority:** P1
-- **Status:** pending
-- **Dependencies:** F001
-- **Phase:** phase-1
-- **Tags:** ui
-
-[Description...]
-```
-
-**For flat structure (no groups detected):**
 
 ```markdown
 # Product Roadmap
@@ -197,6 +141,26 @@ Create `specs/overview.md` with:
 - **Dependencies:** none
 - **Phase:** phase-1
 - **Tags:** core
+
+[Description...]
+
+### 2. [Core Feature 2]
+- **ID:** F002
+- **Priority:** P0
+- **Status:** pending
+- **Dependencies:** none
+- **Phase:** phase-1
+- **Tags:** core
+
+[Description...]
+
+### 3. [Supporting Feature]
+- **ID:** F003
+- **Priority:** P1
+- **Status:** pending
+- **Dependencies:** F001
+- **Phase:** phase-1
+- **Tags:** ui
 
 [Description...]
 ```
@@ -213,11 +177,10 @@ Create `specs/overview.md` with:
 - Core value features → P0
 - Supporting features → P1
 - Nice-to-have → P2
-- Nice-to-have → P2
 
 ---
 
-### 3.3: Data Shape
+### 4.3: Data Shape
 
 **Immediately create** `specs/data_shape.md`:
 
@@ -229,26 +192,23 @@ Create `specs/overview.md` with:
 ```markdown
 # Data Shape
 
-## Shared Entities (for lib/core/domain/models/)
-
-Entities used by 3 or more features should be marked as shared.
-
-### [Shared Entity 1]
-[Description - mark as shared if used across multiple features]
-
-## Feature-Specific Entities
+## Entities
 
 ### [Entity 1]
 [Description based on its role in the app]
 
+**Properties:**
+- `id` — Unique identifier
+- `name` — Display name
+- [Other properties...]
+
 ### [Entity 2]
-...
+[Description...]
 
 ## Relationships
 
 - [Entity 1] has many [Entity 2]
 - [Entity 2] belongs to [Entity 1]
-...
 ```
 
 **Entity Inference Rules:**
@@ -257,20 +217,13 @@ Entities used by 3 or more features should be marked as shared.
 - Dashboard/reports → analytics entity
 - Categories/tags → classification entity
 
-**Shared Entity Detection:**
-- User, Profile, Account → Almost always shared
-- Transaction, Item, Order → Often shared (used by create, list, detail, analytics features)
-- Category, Tag → Often shared (used by multiple features for classification)
-
 ---
 
-### 3.4: Feature Specs
+### 4.4: Feature Specs
 
-**Automatically create** `specs/features/[feature_path]/spec.md` for each roadmap item:
+**Automatically create** `specs/features/[feature_slug]/spec.md` for each roadmap item:
 
-**Feature path construction:**
-- **With group:** `[group_slug]/[feature_slug]` → `specs/features/tasks/add_task/spec.md`
-- **Without group:** `[feature_slug]` → `specs/features/add_task/spec.md`
+**Feature path construction:** `[feature_slug]` → `specs/features/add_task/`
 
 ```markdown
 # [Feature Name] Spec
@@ -298,6 +251,9 @@ Entities used by 3 or more features should be marked as shared.
 ## Data Requirements
 - [Entity 1] (read, create)
 - [Entity 2] (read-only)
+
+## Validation
+- [Business rules and constraints]
 ```
 
 **User Flow Inference:**
@@ -363,7 +319,7 @@ Present a comprehensive summary:
 **📱 App:** [App Name]
 **🎨 Design:** [Theme selected / Not set]
 **📋 Features:** [N] features defined
-**📁 Structure:** Feature-first architecture ready
+**📁 Structure:** Clean Architecture ready
 
 **Generated Files:**
 - `specs/overview.md` — Product vision
@@ -405,29 +361,6 @@ You're all set! Start building your first feature."
 ---
 
 ## Supporting Sections
-
-### Group Detection Patterns
-
-When multiple features share similar functionality, group them together:
-
-| Keywords in Multiple Features | Suggested Group |
-|------------------------------|-----------------|
-| "backup", "export", "sync to" | `backup` |
-| "task", "todo", "item", "entry" | `tasks` |
-| "notification", "email", "alert", "push" | `notifications` |
-| "login", "auth", "user", "profile" | `auth` |
-| "settings", "config", "preferences" | `settings` |
-
-**Group slug rules:**
-- Lowercase everything
-- Replace spaces with underscore
-- Remove special characters
-- Keep words intact
-
-Examples:
-- "Tasks" → `tasks`
-- "Google Drive" → `google_drive`
-- "Push Notification" → `push_notification`
 
 ### Feature Inference Database
 

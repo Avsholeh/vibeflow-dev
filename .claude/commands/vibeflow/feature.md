@@ -23,7 +23,7 @@ First, check if development plan files exist in `/specs/plans/`.
 1. Find the latest development plan (highest N in `plan_[N].md`)
 2. Read the development plan file
 3. Extract selected features from the "Selected Features" section
-4. Display features from the development plan in implementation order, grouped by category
+4. Display features from the development plan in implementation order
 
 "If you have an active development plan, I'll show features from your latest plan.
 
@@ -32,36 +32,30 @@ First, check if development plan files exist in `/specs/plans/`.
 
 **Features for this plan:**
 
-**Group: Tasks**
+**Priority: P0**
 1. **[Feature 1]** (F001) — Priority: P0 | Status: pending
 2. **[Feature 2]** (F002) — Priority: P0 | Status: pending
 
-**Group: Backup**
+**Priority: P1**
 3. **[Feature 3]** (F003) — Priority: P1 | Status: pending
-
-**Ungrouped Features**
-4. **[Feature 4]** (F004) — Priority: P1 | Status: pending
 
 Type the feature name or number to build, or 'all' to see roadmap features:"
 
 Wait for user input.
 
 **If user types 'all' or no development plans exist:**
-Read the roadmap and list all available features, grouped by category:
+Read the roadmap and list all available features:
 
 "Which feature would you like to build?
 
 **Available Features:**
 
-**Group: Tasks**
+**Priority: P0**
 1. **[Feature 1]** (F001) — Priority: P0 | Status: pending
 2. **[Feature 2]** (F002) — Priority: P1 | Status: pending
 
-**Group: Backup**
+**Priority: P1**
 3. **[Feature 3]** (F003) — Priority: P1 | Status: pending
-
-**Ungrouped Features**
-4. **[Feature 4]** (F004) — Priority: P2 | Status: pending
 
 Type the feature name or number:"
 
@@ -97,9 +91,7 @@ Update `specs/roadmap.md` to mark the feature as `in_progress`:
 
 Generate sample data files for the selected feature:
 
-**Feature path construction:**
-- **With group:** `specs/features/[group_slug]/[feature_slug]/`
-- **Without group:** `specs/features/[feature_slug]/`
+**Feature path construction:** `[feature_slug]` → `specs/features/add_task/`
 
 - Read feature spec from the path above
 - Create `data.json` in the feature path
@@ -120,37 +112,29 @@ Then create screen widgets:
 - Read feature spec and sample data
 - Use flutter-ui-design skill for UI implementation
 
-**Feature path for implementation:**
-- **With group:** `lib/features/[group_slug]/[feature_slug]/`
-- **Without group:** `lib/features/[feature_slug]/`
-
-Generate:
-- Screen widgets in `[feature_path]/screens/`
+**Screen paths (Clean Architecture):**
+- Screen widgets in `lib/presentation/screens/`
 - View wrappers using sample data
 - Page wrappers for production
 
 ### Phase 4: Implement Logic
 
-Create business logic:
+Create business logic following Clean Architecture:
 
-**Determine model location:**
-1. Check `specs/data_shape.md` for shared entities section
-2. If entity is marked as "shared", generate in `lib/core/domain/models/`
-3. If entity is used by 3+ features, generate in `lib/core/domain/models/`
-4. Otherwise, generate in feature-specific domain models
+**Domain Layer:**
+- Domain entities in `lib/domain/entities/` (all entities go here, no feature folders)
+- Repository interfaces in `lib/domain/repositories/`
+- Use cases in `lib/domain/usecases/` (business logic operations)
 
-**Feature path for implementation:**
-- **With group:** `lib/features/[group_slug]/[feature_slug]/`
-- **Without group:** `lib/features/[feature_slug]/`
+**Data Layer:**
+- Repository implementations in `lib/data/repositories/`
+- Data sources in `lib/data/datasources/`
+- DTOs in `lib/data/models/` (for data transfer)
 
-**Generate files:**
-- Domain models (shared → `lib/core/domain/models/` or feature-specific → `[feature_path]/domain/models/`)
-- Repository interfaces in `[feature_path]/domain/repositories/`
-- Repository implementations in `[feature_path]/data/repositories/`
-- Data sources in `[feature_path]/data/datasources/`
-- Providers in `[feature_path]/providers/`
+**Presentation Layer:**
+- Providers in `lib/presentation/providers/`
 
-**Note:** If generating models in `lib/core/domain/models/`, check if the model file already exists. If it does, import the existing model instead of creating a duplicate.
+**Note:** If generating entities in `lib/domain/entities/`, check if the entity file already exists. If it does, import the existing entity instead of creating a duplicate.
 
 ### Phase 5: Update Feature Status
 
@@ -169,22 +153,28 @@ Present a comprehensive summary:
 **Generated Files:**
 
 **Spec & Data:**
-- `specs/features/[feature_path]/spec.md`
-- `specs/features/[feature_path]/data.json`
-- `specs/features/[feature_path]/models.md`
+- `specs/features/[feature_slug]/spec.md`
+- `specs/features/[feature_slug]/data.json`
+- `specs/features/[feature_slug]/models.md`
 
-**Implementation:**
-- `lib/core/domain/models/` — Shared domain models (if any)
-- `lib/features/[feature_path]/domain/models/` — Feature-specific models
-- `lib/features/[feature_path]/domain/repositories/` — Repository interfaces
-- `lib/features/[feature_path]/data/repositories/` — Repository implementations
-- `lib/features/[feature_path]/data/datasources/` — Data sources
-- `lib/features/[feature_path]/providers/` — State providers
-- `lib/features/[feature_path]/screens/` — UI screens
+**Implementation (Clean Architecture):**
 
-**Note:** `[feature_path]` is `[group]/[feature]` for grouped features, or `[feature]` for standalone features.
+**Domain Layer:**
+- `lib/domain/entities/` — Domain entities (if new)
+- `lib/domain/repositories/` — Repository interfaces
+- `lib/domain/usecases/` — Business logic use cases
 
-**Status Updated:** [Feature Name] is now marked as `in_progress` in the roadmap.
+**Data Layer:**
+- `lib/data/repositories/` — Repository implementations
+- `lib/data/datasources/` — Data sources
+- `lib/data/models/` — DTOs (if needed)
+
+**Presentation Layer:**
+- `lib/presentation/screens/` — UI screens
+- `lib/presentation/widgets/` — Shared widgets (if any)
+- `lib/presentation/providers/` — State providers
+
+**Status Updated:** [Feature Name] is now marked as `done` in the roadmap.
 
 **Next Steps:**
 
@@ -213,7 +203,8 @@ Present a comprehensive summary:
 **Implementation Notes:**
 - Data sources use mock implementations by default — replace with real API/database when ready
 - State management uses the Provider pattern — update `main.dart` if needed
-- Screens use sample data in development — they'll connect to real providers in production"
+- Screens use sample data in development — they'll connect to real providers in production
+- **Clean Architecture:** Entities in domain/, use cases for business logic, providers depend on use cases"
 
 ---
 
@@ -228,7 +219,7 @@ Present a comprehensive summary:
 - **Feature slug detection:** Use the same slug conversion as other commands (lowercase, underscore) — see CLAUDE.md
 - **Status tracking:** Always update the roadmap status to reflect implementation progress
 - **Dependency awareness:** Check if dependencies are implemented; if not, warn user
-- **File structure:** Follow the exact VibeFlow feature-first architecture — see CLAUDE.md
+- **File structure:** Follow the exact VibeFlow Clean Architecture — see CLAUDE.md
 - **Provider setup:** Ensure main.dart has the feature's provider registered — see Provider template in CLAUDE.md
 - **Immediate writing:** Never show drafts — always write files directly
 - **Reference:** All specification formats are in CLAUDE.md
@@ -271,14 +262,11 @@ Convert feature names to slugs using these rules:
 - Remove special characters
 - Keep words intact
 
-**Examples (without group):**
+**Examples:**
 - "Dashboard" → `dashboard`
 - "User Management" → `user_management`
-
-**Examples (with group):**
-- Group: "Tasks" → `tasks`
-- Feature: "Add Task" → `add_task`
-- Combined: `tasks/add_task`
+- "Add Transaction Flow" → `add_transaction_flow`
+- "Due Dates & Reminders" → `due_dates_reminders`
 
 ---
 
@@ -286,20 +274,19 @@ Convert feature names to slugs using these rules:
 
 A feature is considered complete when all of the following are met:
 
-**Note:** `[feature_path]` is `[group]/[feature]` for grouped features, or `[feature]` for standalone features.
-
 ### Spec & Data (50%)
-- [ ] `specs/features/[feature_path]/spec.md` exists with complete feature description
-- [ ] `specs/features/[feature_path]/data.json` exists with realistic sample data
-- [ ] `specs/features/[feature_path]/models.md` exists with Dart model definitions
+- [ ] `specs/features/[feature_slug]/spec.md` exists with complete feature description
+- [ ] `specs/features/[feature_slug]/data.json` exists with realistic sample data
+- [ ] `specs/features/[feature_slug]/models.md` exists with Dart model definitions
 
-### Domain Models (20%)
-- [ ] Domain model classes exist in `lib/features/[feature_path]/domain/models/`
-- [ ] Models have all required properties and types
-- [ ] Repository interface exists in `lib/features/[feature_path]/domain/repositories/`
+### Domain Layer (20%)
+- [ ] Domain entity classes exist in `lib/domain/entities/`
+- [ ] Entities have all required properties and types
+- [ ] Repository interface exists in `lib/domain/repositories/`
+- [ ] Use cases exist in `lib/domain/usecases/`
 
-### Business Logic (15%)
-- [ ] Repository implementation exists in `lib/features/[feature_path]/data/repositories/`
+### Data Layer (15%)
+- [ ] Repository implementation exists in `lib/data/repositories/`
 - [ ] Data source exists (mock, API, or database)
 - [ ] Provider exists with state management (ChangeNotifier)
 - [ ] Provider is registered in `main.dart`
@@ -322,7 +309,7 @@ A feature is considered complete when all of the following are met:
 This command handles the complete feature implementation:
 1. Sample data generation — Create data.json and models.md
 2. Screen implementation — Generate UI widgets and wrappers
-3. Business logic — Create domain models, repositories, providers
+3. Business logic — Create entities, repositories, use cases, providers
 
 Benefits:
 - Runs all phases in sequence automatically
