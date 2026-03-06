@@ -136,7 +136,19 @@ Create business logic following Clean Architecture:
 
 **Note:** If generating entities in `lib/domain/entities/`, check if the entity file already exists. If it does, import the existing entity instead of creating a duplicate.
 
-### Phase 5: Update Feature Status
+### Phase 5: Code Quality Check
+
+Run code quality checks to ensure the implementation is correct:
+
+```bash
+flutter analyze
+```
+
+- If any warnings or errors are found, iterate and fix them
+- Re-run `flutter analyze` until no errors remain
+- Only proceed to the next phase once the code is clean
+
+### Phase 6: Update Feature Status
 
 Update `specs/roadmap.md` to mark the feature as `done`:
 - Find the feature's metadata block
@@ -223,7 +235,6 @@ Present a comprehensive summary:
 - **Provider setup:** Ensure main.dart has the feature's provider registered — see Provider template in CLAUDE.md
 - **Immediate writing:** Never show drafts — always write files directly
 - **Reference:** All specification formats are in CLAUDE.md
-- **Code quality:** Run `flutter analyze` after feature completion to verify no warnings or errors, iterate until no errors
 
 ---
 
