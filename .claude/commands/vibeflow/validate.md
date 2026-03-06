@@ -64,9 +64,10 @@ Check `specs/roadmap.md`:
 
 **Required format:**
 - Features section with ## Features heading
-- Each feature has numbered heading (### 1., ### 2., etc.)
+- Each feature has numbered heading (### 1., ### 2., etc. or #### 1., #### 2., etc. under groups)
 - Each feature has metadata fields:
   - ID (F### format)
+  - Group (optional - lowercase with underscores/hyphens)
   - Priority (P0, P1, or P2)
   - Effort (small, medium, large, or xlarge)
   - Status (pending, started, in_progress, done, or blocked)
@@ -81,6 +82,8 @@ Check `specs/roadmap.md`:
 - Status values are valid
 - Priority values are valid
 - Effort values are valid
+- Group slugs are valid format (lowercase, hyphens/underscores only) - if present
+- Group sections have proper headings (if groups are used)
 
 **Report:**
 - ✅ Valid — [N] features with valid metadata
@@ -90,6 +93,8 @@ Check `specs/roadmap.md`:
   - Invalid status values: [list]
   - Invalid priority values: [list]
   - Invalid effort values: [list]
+  - Invalid group slugs: [list]
+  - Inconsistent group formatting: [list]
 - ❌ Not found or malformed
 
 ---
@@ -155,6 +160,12 @@ Check if design system files exist:
 
 Check each feature directory in `specs/features/`:
 
+**For grouped features:**
+- Check `specs/features/[group_slug]/[feature_slug]/` directories
+
+**For ungrouped features:**
+- Check `specs/features/[feature_slug]/` directories
+
 For each feature directory:
 - `spec.md` exists and has required sections (Purpose, User Flows, Screens, States, Interactions, Data Requirements)
 - `data.json` exists and is valid JSON
@@ -163,9 +174,9 @@ For each feature directory:
 **Report:**
 - ✅ All features valid — [N] features complete
 - ⚠️ Feature issues:
-  - [Feature]: Missing spec.md
-  - [Feature]: Invalid data.json
-  - [Feature]: Missing models.md
+  - [Group/Feature]: Missing spec.md
+  - [Group/Feature]: Invalid data.json
+  - [Group/Feature]: Missing models.md
 - ❌ No features found
 
 ---

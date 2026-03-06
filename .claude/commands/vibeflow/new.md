@@ -71,6 +71,12 @@ Identify the main areas/sections of the product:
 - "What are the main areas or screens of this product? (e.g., Dashboard, Settings, Invoices)"
 - "What would you consider the most critical area to build first?"
 - "Are there any areas that should be separate from the core functionality?"
+- **Group Detection:** Look for keywords that suggest feature groups:
+  - "backup", "export", "integration" → `backup` group
+  - "task", "todo", "item" → `tasks` group
+  - "notification", "email", "alert" → `notifications` group
+  - "auth", "login", "user" → `auth` group
+  - "settings", "config", "preferences" → `settings` group
 
 ### Data Shape Questions
 
@@ -127,7 +133,57 @@ Create `specs/overview.md` with:
 - App description (extract verbs/nouns)
 - Mobile app patterns (auth, dashboard, lists, forms, settings)
 
-**Generate 3-6 features** using the simple format:
+**Detect feature groups** from related features:
+- Multiple backup-related features → `backup` group
+- Multiple task-related features → `tasks` group
+- Multiple notification features → `notifications` group
+
+**Generate 3-6 features** using the grouped format (when groups are detected):
+
+```markdown
+# Product Roadmap
+
+## Features
+
+### Group: [Group Name]
+
+#### 1. [Core Feature 1]
+- **ID:** F001
+- **Group:** [group_slug]
+- **Priority:** P0
+- **Status:** pending
+- **Dependencies:** none
+- **Phase:** phase-1
+- **Tags:** core
+
+[Description...]
+
+#### 2. [Core Feature 2]
+- **ID:** F002
+- **Group:** [group_slug]
+- **Priority:** P0
+- **Status:** pending
+- **Dependencies:** none
+- **Phase:** phase-1
+- **Tags:** core
+
+[Description...]
+
+### Group: [Another Group]
+
+#### 3. [Supporting Feature]
+- **ID:** F003
+- **Group:** [another_group_slug]
+- **Priority:** P1
+- **Status:** pending
+- **Dependencies:** F001
+- **Phase:** phase-1
+- **Tags:** ui
+
+[Description...]
+```
+
+**For flat structure (no groups detected):**
 
 ```markdown
 # Product Roadmap
@@ -137,33 +193,10 @@ Create `specs/overview.md` with:
 ### 1. [Core Feature 1]
 - **ID:** F001
 - **Priority:** P0
-- **Effort:** medium
 - **Status:** pending
 - **Dependencies:** none
 - **Phase:** phase-1
 - **Tags:** core
-
-[Description...]
-
-### 2. [Core Feature 2]
-- **ID:** F002
-- **Priority:** P0
-- **Effort:** medium
-- **Status:** pending
-- **Dependencies:** none
-- **Phase:** phase-1
-- **Tags:** core
-
-[Description...]
-
-### 3. [Supporting Feature]
-- **ID:** F003
-- **Priority:** P1
-- **Effort:** small
-- **Status:** pending
-- **Dependencies:** F001
-- **Phase:** phase-1
-- **Tags:** ui
 
 [Description...]
 ```
@@ -233,7 +266,11 @@ Entities used by 3 or more features should be marked as shared.
 
 ### 3.4: Feature Specs
 
-**Automatically create** `specs/features/[feature_slug]/spec.md` for each roadmap item:
+**Automatically create** `specs/features/[feature_path]/spec.md` for each roadmap item:
+
+**Feature path construction:**
+- **With group:** `[group_slug]/[feature_slug]` → `specs/features/tasks/add_task/spec.md`
+- **Without group:** `[feature_slug]` → `specs/features/add_task/spec.md`
 
 ```markdown
 # [Feature Name] Spec
@@ -368,6 +405,29 @@ You're all set! Start building your first feature."
 ---
 
 ## Supporting Sections
+
+### Group Detection Patterns
+
+When multiple features share similar functionality, group them together:
+
+| Keywords in Multiple Features | Suggested Group |
+|------------------------------|-----------------|
+| "backup", "export", "sync to" | `backup` |
+| "task", "todo", "item", "entry" | `tasks` |
+| "notification", "email", "alert", "push" | `notifications` |
+| "login", "auth", "user", "profile" | `auth` |
+| "settings", "config", "preferences" | `settings` |
+
+**Group slug rules:**
+- Lowercase everything
+- Replace spaces with hyphens
+- Remove special characters
+- Keep words intact
+
+Examples:
+- "Tasks" → `tasks`
+- "Google Drive" → `google_drive`
+- "Push Notification" → `push_notification`
 
 ### Feature Inference Database
 

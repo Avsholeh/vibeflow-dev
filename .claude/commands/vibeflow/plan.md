@@ -39,8 +39,12 @@ Read `/specs/roadmap.md` and extract all features with their metadata.
 
 **Parse Features:**
 - Extract metadata from list format under each feature heading
-- **Fields:** ID, Priority, Status, Dependencies, Phase, Tags
-- **Missing metadata:** Use sensible defaults (P1, pending, none, phase-1)
+- **Fields:** ID, Group (optional), Priority, Status, Dependencies, Phase, Tags
+- **Missing metadata:** Use sensible defaults (no group, P1, pending, none, phase-1)
+
+**Feature path construction:**
+- **With group:** Features with a `Group` field use path `[group_slug]/[feature_slug]`
+- **Without group:** Features without a `Group` field use path `[feature_slug]`
 
 ---
 
@@ -65,6 +69,7 @@ Read the roadmap and extract all features with their metadata:
 **For each feature, extract:**
 - Feature name
 - Feature ID (F001, F002...)
+- Group (optional - for hierarchical organization)
 - Priority (P0, P1, P2)
 - Status (pending, in_progress, done, blocked)
 - Dependencies (array of feature IDs)
@@ -131,6 +136,8 @@ Starting with the highest priority features from the sorted list:
 
 Format the development plan with the following structure:
 
+**For grouped features:**
+
 ```markdown
 # Development Plan - [Focus Area]
 
@@ -139,19 +146,33 @@ Format the development plan with the following structure:
 
 ## Selected Features ([N] total)
 
-### Priority: P0
+### Group: [Group Name]
+
+#### Priority: P0
 1. **[Feature 1]** — [Feature ID]
+   - **Path:** `features/[group]/[feature]`
    - **Dependencies:** [None or list]
    - **Deliverables:** [Key screens, logic, data]
    - **Acceptance:** [What "done" looks like]
 
 2. **[Feature 2]** — [Feature ID]
+   - **Path:** `features/[group]/[feature]`
    - **Dependencies:** F001 (must complete [Feature 1] first)
    - **Deliverables:** [Key screens, logic, data]
    - **Acceptance:** [What "done" looks like]
 
-### Priority: P1
+#### Priority: P1
 [Additional features if applicable]
+
+### Group: [Another Group]
+
+#### Priority: P0
+[Features in this group...]
+
+### Ungrouped Features
+
+#### Priority: P0
+[Features without groups...]
 
 ## Blocked Features (Deferred)
 [Features that couldn't be included due to unmet dependencies]
@@ -169,9 +190,9 @@ Format the development plan with the following structure:
 ```
 
 ### Implementation Order
-1. [Feature 1] — Foundation for other features
-2. [Feature 2] — Builds on Feature 1
-3. [Feature 3] — Independent feature
+1. [Feature 1] (tasks/) — Foundation for other features
+2. [Feature 2] (tasks/) — Builds on Feature 1
+3. [Feature 3] (backup/) — Independent feature
 
 ### Daily Progress Check
 ```bash
@@ -182,6 +203,25 @@ Format the development plan with the following structure:
 ## Plan Notes
 - **Date:** [Today's date]
 - **Focus:** [Focus area description]
+```
+
+**For flat structure (no groups):**
+
+```markdown
+# Development Plan - [Focus Area]
+
+## Plan Goals
+[Summary based on focus area: "Complete P0 features for MVP Foundation"]
+
+## Selected Features ([N] total)
+
+### Priority: P0
+1. **[Feature 1]** — [Feature ID]
+   - **Dependencies:** [None or list]
+   - **Deliverables:** [Key screens, logic, data]
+   - **Acceptance:** [What "done" looks like]
+
+[... rest of plan ...]
 ```
 
 ---
@@ -300,6 +340,12 @@ Ask for feature name, then these questions:
 - "P1 - Important" — Supporting features, nice to have soon
 - "P2 - Nice to have" — Enhancements, can be deferred
 
+**Question: Group** (optional)
+"Should this feature be grouped with other features?"
+- "No group" — Standalone feature in flat structure
+- "Existing group" — Add to an existing group (then ask which group)
+- "New group" — Create a new group (then ask for group name)
+
 **Question: Dependencies**
 "Does this feature depend on any existing features?"
 - "No dependencies" — Feature can be built independently
@@ -327,7 +373,9 @@ If "Yes", prompt: "Which entities should be shared?" (list entity names)
 
 **2. Generate Feature Spec:**
 
-Create the feature spec file at `/specs/features/[feature_slug]/spec.md`:
+Create the feature spec file at:
+- **With group:** `/specs/features/[group_slug]/[feature_slug]/spec.md`
+- **Without group:** `/specs/features/[feature_slug]/spec.md`
 
 ```markdown
 # [Feature Name] Spec
@@ -366,6 +414,21 @@ Create the feature spec file at `/specs/features/[feature_slug]/spec.md`:
 **Update Roadmap:**
 Append the new feature to `/specs/roadmap.md` with auto-incremented ID:
 
+**For grouped features (add to appropriate group section):**
+```markdown
+### Group: [Group Name]
+
+#### [Feature Name]
+- **ID:** F[XXX] (next available number)
+- **Group:** [group_slug]
+- **Priority:** [P0/P1/P2]
+- **Status:** pending
+- **Dependencies:** [none or F001, F002...]
+- **Phase:** [phase-X]
+- **Tags:** [core, ui, data, analytics...]
+```
+
+**For ungrouped features:**
 ```markdown
 ### [Feature Name]
 - **ID:** F[XXX] (next available number)

@@ -148,6 +148,58 @@ VibeFlow uses **shared models in `core/`** to handle cross-feature dependencies:
 3. **Import direction** should be one-way (avoid circular dependencies)
 4. **When in doubt**, extract to `core/` — it's easier to move than to refactor later
 
+### Hierarchical Feature Organization
+
+VibeFlow supports **grouping related features** for better project organization:
+
+**When to use groups:**
+- Multiple features share similar functionality (e.g., multiple backup integrations)
+- Features are logically related (e.g., all task-related features)
+- You want to organize features by domain area (e.g., auth, billing, settings)
+
+**How it works:**
+- Features in the same group are placed under a shared directory: `features/[group]/[feature]/`
+- Each feature remains independent with its own architecture layers
+- Groups are purely organizational — they don't affect how features communicate
+
+**Example structure:**
+```
+features/
+├── tasks/
+│   ├── add_task/
+│   │   ├── domain/
+│   │   ├── data/
+│   │   ├── screens/
+│   │   └── providers/
+│   └── edit_task/
+│       ├── domain/
+│       └── ...
+├── backup/
+│   ├── google_drive/
+│   └── dropbox/
+└── notifications/
+    ├── email/
+    └── push/
+```
+
+**Group vs Shared Models:**
+- **Groups** organize related features (directory structure)
+- **Shared models** handle cross-feature data dependencies (module architecture)
+- You can have both: features in a group may share models via `lib/core/domain/models/`
+
+| Scenario | Location | Example |
+|----------|----------|---------|
+| Model used by 3+ features | `lib/core/domain/models/` | `User`, `Transaction`, `Category` |
+| Model used by 2 features | First feature's domain | `auth/user.dart` → imported by `profile` |
+| One-way dependency | Import from owner | `todos` imports from `auth` |
+| Circular dependency | Extract to core | A→B, B→A → extract shared models |
+
+**Key Principles:**
+1. **Shared domain models** go in `lib/core/domain/models/`
+2. **Feature-specific models** stay in `lib/features/[feature]/domain/models/`
+3. **Import direction** should be one-way (avoid circular dependencies)
+4. **When in doubt**, extract to `core/` — it's easier to move than to refactor later
+
 ### State Management Architecture
 
 VibeFlow uses a **props-driven, provider-based** state management pattern that keeps widgets pure and testable.
@@ -184,11 +236,21 @@ Convert feature names to slugs using these rules:
 - Remove special characters
 - Keep words intact
 
-**Examples:**
+**Examples (without group):**
 - "Dashboard" → `dashboard`
 - "User Management" → `user_management`
 - "Add Transaction Flow" → `add_transaction_flow`
 - "Due Dates & Reminders" → `due_dates_reminders`
+
+**Examples (with group):**
+- Group: "Tasks" → `tasks`
+- Group: "Google Drive" → `google_drive`
+- Feature: "Add Task" → `add_task`
+- Combined: `tasks/add_task`
+
+**Feature path construction:**
+- **With group:** `[group_slug]/[feature_slug]` → `specs/features/tasks/add_task/`
+- **Without group:** `[feature_slug]` → `specs/features/add_task/`
 
 ---
 
@@ -215,15 +277,17 @@ progress = (spec_complete * 25) +
 
 **File Checks:**
 
+**Note:** `[feature_path]` is `[group_slug]/[feature_slug]` for grouped features, or `[feature_slug]` for ungrouped features.
+
 *Spec Status:*
-- `/specs/features/[feature_slug]/spec.md` exists → Spec complete (+25%)
-- `/specs/features/[feature_slug]/data.json` exists → Sample data (+25%)
-- `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
+- `/specs/features/[feature_path]/spec.md` exists → Spec complete (+25%)
+- `/specs/features/[feature_path]/data.json` exists → Sample data (+25%)
+- `/specs/features/[feature_path]/models.md` exists → Types documented (+10%)
 
 *Implementation Status:*
-- `/lib/features/[feature_slug]/domain/models/` has .dart files → Models defined (+20%)
-- `/lib/features/[feature_slug]/providers/` has non-empty .dart files → Logic implemented (+15%)
-- `/lib/features/[feature_slug]/screens/*_page.dart` files exist → Screens implemented (+10%)
+- `/lib/features/[feature_path]/domain/models/` has .dart files → Models defined (+20%)
+- `/lib/features/[feature_path]/providers/` has non-empty .dart files → Logic implemented (+15%)
+- `/lib/features/[feature_path]/screens/*_page.dart` files exist → Screens implemented (+10%)
 
 ---
 
@@ -253,6 +317,53 @@ progress = (spec_complete * 25) +
 
 ### Roadmap Format
 
+**For grouped features (recommended for related features):**
+
+```markdown
+# Product Roadmap
+
+## Features
+
+### Group: Tasks
+
+#### 1. Add Task
+- **ID:** F001
+- **Group:** tasks
+- **Priority:** P0
+- **Status:** pending
+- **Dependencies:** none
+- **Phase:** phase-1
+- **Tags:** core
+
+Quick task creation with title and description.
+
+#### 2. Edit Task
+- **ID:** F002
+- **Group:** tasks
+- **Priority:** P1
+- **Status:** pending
+- **Dependencies:** F001
+- **Phase:** phase-1
+- **Tags:** core
+
+Edit existing task details.
+
+### Group: Backup
+
+#### 3. Google Drive Backup
+- **ID:** F003
+- **Group:** backup
+- **Priority:** P1
+- **Status:** pending
+- **Dependencies:** none
+- **Phase:** phase-2
+- **Tags:** integration
+
+Backup data to Google Drive.
+```
+
+**For flat structure (no groups):**
+
 ```markdown
 # Product Roadmap
 
@@ -261,7 +372,6 @@ progress = (spec_complete * 25) +
 ### 1. Dashboard
 - **ID:** F001
 - **Priority:** P0
-- **Effort:** medium
 - **Status:** pending
 - **Dependencies:** none
 - **Phase:** phase-1
@@ -272,35 +382,24 @@ The main screen showing balance and recent activity.
 ### 2. Add Transaction
 - **ID:** F002
 - **Priority:** P0
-- **Effort:** small
 - **Status:** pending
 - **Dependencies:** none
 - **Phase:** phase-1
 - **Tags:** core
 
 A form for quick transaction entry with amount, category, and notes.
-
-### 3. Transaction History
-- **ID:** F003
-- **Priority:** P1
-- **Effort:** medium
-- **Status:** pending
-- **Dependencies:** F001, F002
-- **Phase:** phase-1
-- **Tags:** ui
-
-A list view of all transactions with filtering and search.
 ```
 
 **Metadata Fields:**
-| Field | Type | Values |
-|-------|------|--------|
-| `ID` | string | F001, F002, F003... (auto-generated) |
-| `Priority` | enum | P0, P1, P2 |
-| `Status` | enum | pending, started, in_progress, done, blocked |
-| `Dependencies` | list | F001, F002... or "none" |
-| `Phase` | string | phase-1, phase-2... - Release phase assignment |
-| `Tags` | list | core, ui, data, analytics... - Optional categorization |
+| Field | Type | Values | Description |
+|-------|------|--------|-------------|
+| `ID` | string | F001, F002, F003... (auto-generated) | Unique feature identifier |
+| `Group` | string | tasks, backup, etc. (optional) | Logical grouping for hierarchical organization |
+| `Priority` | enum | P0, P1, P2 | Development priority |
+| `Status` | enum | pending, started, in_progress, done, blocked | Implementation status |
+| `Dependencies` | list | F001, F002... or "none" | Feature IDs this feature depends on |
+| `Phase` | string | phase-1, phase-2... | Release phase assignment |
+| `Tags` | list | core, ui, data, analytics... | Optional categorization |
 
 **Note:** The `Effort` field may be present in existing roadmaps for informational purposes but is no longer used for capacity calculations.
 
@@ -605,6 +704,7 @@ A classification for organizing related tasks together.
 
 ### Spec Files
 
+**For grouped features (recommended for related features):**
 ```
 specs/
 ├── overview.md                    # Product overview
@@ -615,6 +715,28 @@ specs/
 │   ├── colors.json                # Color tokens for light/dark modes
 │   └── typography.json            # Typography definitions
 └── features/
+    ├── [group_slug]/             # Feature group (optional)
+    │   └── [feature_slug]/
+    │       ├── spec.md            # Feature specification
+    │       ├── data.json          # Sample data
+    │       └── models.md          # Domain models & props
+    └── [feature_slug]/           # Standalone feature
+        ├── spec.md
+        ├── data.json
+        └── models.md
+```
+
+**For flat structure (no groups):**
+```
+specs/
+├── overview.md
+├── roadmap.md
+├── data_shape.md
+├── design_system/
+│   ├── design_system.md
+│   ├── colors.json
+│   └── typography.json
+└── features/
     └── [feature_slug]/
         ├── spec.md                # Feature specification
         ├── data.json              # Sample data
@@ -623,27 +745,57 @@ specs/
 
 ### Implementation Files
 
+**For grouped features:**
 ```
-lib/features/[feature_slug]/
-├── domain/
-│   ├── models/
-│   │   └── [model].dart         # Feature-specific models only
-│   └── repositories/
-│       └── [feature]_repository.dart
-├── data/
-│   ├── datasources/
-│   │   └── [feature]_datasource.dart
-│   └── repositories/
-│       └── [feature]_repository_impl.dart
-├── providers/
-│   └── [feature]_provider.dart
-├── screens/
-│   ├── [screen]_screen.dart    # Pure UI (props-driven)
-│   ├── [screen]_view.dart      # Dev wrapper (data.json)
-│   └── [screen]_page.dart      # Production wrapper (Provider)
-├── widgets/
-│   └── [widget].dart
-└── routes.dart
+lib/features/
+├── [group_slug]/                 # Feature group
+│   └── [feature_slug]/
+│       ├── domain/
+│       │   ├── models/
+│       │   │   └── [model].dart         # Feature-specific models only
+│       │   └── repositories/
+│       │       └── [feature]_repository.dart
+│       ├── data/
+│       │   ├── datasources/
+│       │   │   └── [feature]_datasource.dart
+│       │   └── repositories/
+│       │       └── [feature]_repository_impl.dart
+│       ├── providers/
+│       │   └── [feature]_provider.dart
+│       ├── screens/
+│       │   ├── [screen]_screen.dart    # Pure UI (props-driven)
+│       │   ├── [screen]_view.dart      # Dev wrapper (data.json)
+│       │   └── [screen]_page.dart      # Production wrapper (Provider)
+│       ├── widgets/
+│       │   └── [widget].dart
+│       └── routes.dart
+└── [feature_slug]/               # Standalone feature
+    └── ...
+```
+
+**For flat structure (no groups):**
+```
+lib/features/
+└── [feature_slug]/
+    ├── domain/
+    │   ├── models/
+    │   │   └── [model].dart         # Feature-specific models only
+    │   └── repositories/
+    │       └── [feature]_repository.dart
+    ├── data/
+    │   ├── datasources/
+    │   │   └── [feature]_datasource.dart
+    │   └── repositories/
+    │       └── [feature]_repository_impl.dart
+    ├── providers/
+    │   └── [feature]_provider.dart
+    ├── screens/
+    │   ├── [screen]_screen.dart    # Pure UI (props-driven)
+    │   ├── [screen]_view.dart      # Dev wrapper (data.json)
+    │   └── [screen]_page.dart      # Production wrapper (Provider)
+    ├── widgets/
+    │   └── [widget].dart
+    └── routes.dart
 
 lib/core/
 ├── domain/

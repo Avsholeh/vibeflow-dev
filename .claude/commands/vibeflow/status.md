@@ -21,15 +21,20 @@ Read `/specs/roadmap.md` and extract all features.
 
 **Parse Features:**
 - Extract metadata from list format under each feature heading
-- **Fields available:** ID, Priority, Effort, Status, Dependencies, Phase, Tags
-- **Missing metadata:** Assign sensible defaults (P1, medium, pending, none, phase-1)
+- **Fields available:** ID, Group (optional), Priority, Effort, Status, Dependencies, Phase, Tags
+- **Missing metadata:** Assign sensible defaults (no group, P1, medium, pending, none, phase-1)
 
 Extract for each feature:
 - Feature name (from heading)
 - Feature ID (from list or auto-generate as F001, F002...)
+- Group (optional - for hierarchical organization)
 - Priority (P0, P1, P2 or default P1)
 - Effort (small, medium, large, xlarge or default medium)
 - Phase (from list or default "phase-1")
+
+**Feature path construction:**
+- **With group:** `features/[group_slug]/[feature_slug]/`
+- **Without group:** `features/[feature_slug]/`
 
 ---
 
@@ -37,19 +42,24 @@ Extract for each feature:
 
 For each feature, check the following paths:
 
+**Feature path construction:**
+- **With group:** `[group_slug]/[feature_slug]`
+- **Without group:** `[feature_slug]`
+
 **Spec Status:**
-- `/specs/features/[feature_slug]/spec.md` exists → Spec complete (+25%)
-- `/specs/features/[feature_slug]/data.json` exists → Sample data (+25%)
-- `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
+- `/specs/features/[feature_path]/spec.md` exists → Spec complete (+25%)
+- `/specs/features/[feature_path]/data.json` exists → Sample data (+25%)
+- `/specs/features/[feature_path]/models.md` exists → Types documented (+10%)
 
 **Implementation Status:**
-- `/lib/features/[feature_slug]/domain/models/` has .dart files → Models defined (+20%)
-- `/lib/features/[feature_slug]/providers/` has non-empty .dart files → Logic implemented (+15%)
-- `/lib/features/[feature_slug]/screens/*_page.dart` files exist → Screens implemented (+10%)
+- `/lib/features/[feature_path]/domain/models/` has .dart files → Models defined (+20%)
+- `/lib/features/[feature_path]/providers/` has non-empty .dart files → Logic implemented (+15%)
+- `/lib/features/[feature_path]/screens/*_page.dart` files exist → Screens implemented (+10%)
 
 **Feature slug conversion:**
-- Convert feature name to lowercase, replace spaces with hyphens
-- Example: "Add Transaction Flow" → `add_transaction_flow`
+- Group slug: lowercase, spaces → hyphens (e.g., "Tasks" → `tasks`)
+- Feature slug: lowercase, spaces → hyphens (e.g., "Add Task" → `add_task`)
+- Combined: `[group_slug]/[feature_slug]` (e.g., `tasks/add_task`)
 
 **Progress Calculation:**
 ```
@@ -68,15 +78,35 @@ progress = (spec_complete * 25) + (sample_data * 25) + (types_documented * 10) +
 
 Format the status report with the following structure:
 
+**For grouped features:**
+
 ```markdown
 # [App Name] Development Status
 
 ## Phase 1: [Phase Name]
 
+### Group: [Group Name]
+
 | Feature | ID | Priority | Spec | Data | Types | Models | Logic | Screens | Progress |
 |---------|----|----------|------|------|-------|--------|-------|---------|----------|
 | [Feature 1] | F001 | P0 | [X] | [X] | [X] | [X] | [ ] | [ ] | 80% |
 | [Feature 2] | F002 | P1 | [X] | [ ] | [ ] | [ ] | [ ] | [ ] | 25% |
+
+**Group Progress: [X]/[Y] features started ([average]% complete)**
+
+### Group: [Another Group]
+
+| Feature | ID | Priority | Spec | Data | Types | Models | Logic | Screens | Progress |
+|---------|----|----------|------|------|-------|--------|-------|---------|----------|
+| [Feature 3] | F003 | P0 | [X] | [X] | [X] | [X] | [X] | [ ] | 90% |
+
+**Group Progress: [X]/[Y] features started ([average]% complete)**
+
+### Ungrouped Features
+
+| Feature | ID | Priority | Spec | Data | Types | Models | Logic | Screens | Progress |
+|---------|----|----------|------|------|-------|--------|-------|---------|----------|
+| [Feature 4] | F004 | P1 | [X] | [X] | [ ] | [ ] | [ ] | [ ] | 35% |
 
 **Phase Progress: [X]/[Y] features started ([average]% complete)**
 
@@ -107,6 +137,22 @@ Format the status report with the following structure:
 - [ ] Models defined
 - [ ] Logic implemented
 - [ ] Screens implemented
+```
+
+**For flat structure (no groups):**
+
+```markdown
+# [App Name] Development Status
+
+## Phase 1: [Phase Name]
+
+| Feature | ID | Priority | Spec | Data | Types | Models | Logic | Screens | Progress |
+|---------|----|----------|------|------|-------|--------|-------|---------|----------|
+| [Feature 1] | F001 | P0 | [X] | [X] | [X] | [X] | [ ] | [ ] | 80% |
+| [Feature 2] | F002 | P1 | [X] | [ ] | [ ] | [ ] | [ ] | [ ] | 25% |
+
+**Phase Progress: [X]/[Y] features started ([average]% complete)**
+[... rest of report ...]
 ```
 
 **Status Indicators:**
@@ -156,11 +202,12 @@ Would you like details on any specific feature, or help with the next implementa
 
 ## Edge Cases
 
-**Missing feature slug directory:**
-- If `/specs/features/[slug]/` doesn't exist → 0% progress, treat as not started
+**Missing feature path directory:**
+- If `/specs/features/[feature_path]/` doesn't exist → 0% progress, treat as not started
+- Where `[feature_path]` is `[group]/[feature]` for grouped features or `[feature]` for ungrouped
 
 **Missing metadata:**
-- If some fields are missing from the feature list → Use sensible defaults (P1, medium, pending, none, phase-1)
+- If some fields are missing from the feature list → Use sensible defaults (no group, P1, medium, pending, none, phase-1)
 
 **Circular dependencies:**
 - Not relevant for status checking (dependency resolution is for development planning)
