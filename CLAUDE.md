@@ -39,7 +39,7 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 
 ```bash
 /vibeflow:feature
-# → Select feature from sprint plan
+# → Select feature from development plan
 # → Automatically generates:
 #    ✓ Sample data
 #    ✓ Screens (using flutter-ui-design skill)
@@ -55,7 +55,7 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 # → See what's done, in progress, and pending
 ```
 
-**That's it!** 5 commands to build a complete Flutter app.
+**That's it!** 6 commands to build a complete Flutter app.
 
 | What | Command |
 |-------|----------|
@@ -64,6 +64,7 @@ VibeFlow is an **AI-powered Flutter development workflow** that helps you define
 | Plan | `/vibeflow:plan` |
 | Build | `/vibeflow:feature` |
 | Track | `/vibeflow:status` |
+| Validate | `/vibeflow:validate` |
 
 ---
 
@@ -116,7 +117,7 @@ This ensures all VibeFlow UIs are distinctive and production-grade, avoiding gen
 
 ## Workflow Overview
 
-### The Three Pillars
+### The Core Components
 
 1. **Product Overview** — What & why of the Flutter app
 2. **Data Shape** — Domain models & relationships (Dart classes later)
@@ -182,24 +183,6 @@ features/
     └── push/
 ```
 
-**Group vs Shared Models:**
-- **Groups** organize related features (directory structure)
-- **Shared models** handle cross-feature data dependencies (module architecture)
-- You can have both: features in a group may share models via `lib/core/domain/models/`
-
-| Scenario | Location | Example |
-|----------|----------|---------|
-| Model used by 3+ features | `lib/core/domain/models/` | `User`, `Transaction`, `Category` |
-| Model used by 2 features | First feature's domain | `auth/user.dart` → imported by `profile` |
-| One-way dependency | Import from owner | `todos` imports from `auth` |
-| Circular dependency | Extract to core | A→B, B→A → extract shared models |
-
-**Key Principles:**
-1. **Shared domain models** go in `lib/core/domain/models/`
-2. **Feature-specific models** stay in `lib/features/[feature]/domain/models/`
-3. **Import direction** should be one-way (avoid circular dependencies)
-4. **When in doubt**, extract to `core/` — it's easier to move than to refactor later
-
 ### State Management Architecture
 
 VibeFlow uses a **props-driven, provider-based** state management pattern that keeps widgets pure and testable.
@@ -232,7 +215,7 @@ Repository (prod) → Provider → *_page.dart → *_screen.dart
 
 Convert feature names to slugs using these rules:
 - Lowercase everything
-- Replace spaces with hyphens
+- Replace spaces with underscore
 - Remove special characters
 - Keep words intact
 
@@ -714,6 +697,8 @@ specs/
 │   ├── design_system.md          # Design aesthetic & principles
 │   ├── colors.json                # Color tokens for light/dark modes
 │   └── typography.json            # Typography definitions
+├── plans/                         # Development plans
+│   └── plan_[N].md                # Auto-generated plan files
 └── features/
     ├── [group_slug]/             # Feature group (optional)
     │   └── [feature_slug]/
@@ -736,6 +721,8 @@ specs/
 │   ├── design_system.md
 │   ├── colors.json
 │   └── typography.json
+├── plans/                         # Development plans
+│   └── plan_[N].md                # Auto-generated plan files
 └── features/
     └── [feature_slug]/
         ├── spec.md                # Feature specification
@@ -1010,6 +997,18 @@ Create development plans based on priorities and dependencies.
 
 **Questions asked:**
 1. Focus area (P0 only, specific phase, all pending, in-progress)
+
+---
+
+### `/vibeflow:validate`
+
+Validate specification files for format consistency and completeness.
+
+**What it does:**
+1. Checks product overview, roadmap, data shape format
+2. Validates design system JSON files
+3. Verifies feature spec completeness
+4. Reports inconsistencies with actionable recommendations
 
 ---
 

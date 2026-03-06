@@ -90,9 +90,8 @@ Once feature is selected, build it in phases:
 ### Phase 1: Update Feature Status
 
 Update `specs/roadmap.md` to mark the feature as `in_progress`:
-- Find the feature's YAML block
+- Find the feature's metadata block
 - Update `status: pending` → `status: in_progress`
-- Update `lastUpdated` in frontmatter
 
 ### Phase 2: Generate Sample Data
 
@@ -156,9 +155,8 @@ Create business logic:
 ### Phase 5: Update Feature Status
 
 Update `specs/roadmap.md` to mark the feature as `done`:
-- Find the feature's YAML block
+- Find the feature's metadata block
 - Update `status: in_progress` → `status: done`
-- Update `lastUpdated` in frontmatter
 
 ---
 
@@ -227,7 +225,7 @@ Present a comprehensive summary:
 - **flutter-ui-design Skill:** MANDATORY - Use the skill before implementing any screens to ensure distinctive, production-grade UI (see CLAUDE.md)
 - **AskUserQuestion Tool:** ALWAYS use AskUserQuestion when asking the user questions — never ask through text
 - **Atomic execution:** If any phase fails, report the error and stop — don't partially implement
-- **Feature slug detection:** Use the same slug conversion as other commands (lowercase, hyphens) — see CLAUDE.md
+- **Feature slug detection:** Use the same slug conversion as other commands (lowercase, underscore) — see CLAUDE.md
 - **Status tracking:** Always update the roadmap status to reflect implementation progress
 - **Dependency awareness:** Check if dependencies are implemented; if not, warn user
 - **File structure:** Follow the exact VibeFlow feature-first architecture — see CLAUDE.md
@@ -269,7 +267,7 @@ Wait for user input.
 
 Convert feature names to slugs using these rules:
 - Lowercase everything
-- Replace spaces with hyphens
+- Replace spaces with underscore
 - Remove special characters
 - Keep words intact
 

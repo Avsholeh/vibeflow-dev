@@ -67,9 +67,9 @@ Check `specs/roadmap.md`:
 - Each feature has numbered heading (### 1., ### 2., etc. or #### 1., #### 2., etc. under groups)
 - Each feature has metadata fields:
   - ID (F### format)
-  - Group (optional - lowercase with underscores/hyphens)
+  - Group (optional - lowercase with underscore)
   - Priority (P0, P1, or P2)
-  - Effort (small, medium, large, or xlarge)
+  - Effort (optional - small, medium, large, or xlarge; for informational purposes only)
   - Status (pending, started, in_progress, done, or blocked)
   - Dependencies (none or F###, F### list)
   - Phase (phase-1, phase-2, etc.)
@@ -81,8 +81,8 @@ Check `specs/roadmap.md`:
 - All dependencies reference valid feature IDs
 - Status values are valid
 - Priority values are valid
-- Effort values are valid
-- Group slugs are valid format (lowercase, hyphens/underscores only) - if present
+- Effort values are valid (if present)
+- Group slugs are valid format (lowercase, underscore only) - if present
 - Group sections have proper headings (if groups are used)
 
 **Report:**

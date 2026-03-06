@@ -420,7 +420,7 @@ When multiple features share similar functionality, group them together:
 
 **Group slug rules:**
 - Lowercase everything
-- Replace spaces with hyphens
+- Replace spaces with underscore
 - Remove special characters
 - Keep words intact
 

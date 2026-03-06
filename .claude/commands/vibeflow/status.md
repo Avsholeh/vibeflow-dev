@@ -33,8 +33,8 @@ Extract for each feature:
 - Phase (from list or default "phase-1")
 
 **Feature path construction:**
-- **With group:** `features/[group_slug]/[feature_slug]/`
-- **Without group:** `features/[feature_slug]/`
+- **With group:** `lib/features/[group_slug]/[feature_slug]/`
+- **Without group:** `lib/features/[feature_slug]/`
 
 ---
 
@@ -57,8 +57,8 @@ For each feature, check the following paths:
 - `/lib/features/[feature_path]/screens/*_page.dart` files exist → Screens implemented (+10%)
 
 **Feature slug conversion:**
-- Group slug: lowercase, spaces → hyphens (e.g., "Tasks" → `tasks`)
-- Feature slug: lowercase, spaces → hyphens (e.g., "Add Task" → `add_task`)
+- Group slug: lowercase, spaces → underscore (e.g., "Tasks" → `tasks`)
+- Feature slug: lowercase, spaces → underscore (e.g., "Add Task" → `add_task`)
 - Combined: `[group_slug]/[feature_slug]` (e.g., `tasks/add_task`)
 
 **Progress Calculation:**
