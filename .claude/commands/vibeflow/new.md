@@ -8,15 +8,20 @@ Check if any spec files exist in `specs/` directory.
 
 **If specs already exist:**
 
-"I see you already have some project files set up.
-Existing files found: [list of files]
+Use AskUserQuestion to present options:
 
-**Options:**
-1. Start fresh (overwrite existing specs)
-2. Keep existing and add new features
-3. Cancel and manage existing files manually"
+```text
+Question: "I see you already have some project files set up. What would you like to do?"
 
-Wait for user choice. If they choose 1 or 2, proceed. If 3, stop.
+Options:
+1. "Start fresh" — Overwrite existing specs with new app configuration
+2. "Keep existing" — Add new features to existing project files
+3. "Cancel" — Stop and manage existing files manually
+```
+
+- **If Start fresh:** Proceed to Step 2 (will overwrite existing specs)
+- **If Keep existing:** Proceed to Step 2 (will preserve and merge with existing specs)
+- **If Cancel:** Stop execution
 
 **If directory is clean:**
 Proceed to Step 2.
@@ -25,37 +30,58 @@ Proceed to Step 2.
 
 ## Step 2: Gather App Information
 
-Ask the user for essential information:
+First, ask the user to share their raw notes, ideas, or thoughts about the product they want to build. Be warm and open-ended:
 
-**Quick Questions:**
+"I'd love to help you define your product overview. Tell me about the product you're building - share any notes, ideas, or rough thoughts you have. What problem are you trying to solve? Who is it for? Don't worry about structure yet, just share what's on your mind."
 
-1. "What's your app called?"
-   - Wait for app name
-   - **Validation:** App name must:
-     - Be 2-30 characters long
-     - Start with a letter
-     - Contain only letters, numbers, spaces, and hyphens
-     - Not use reserved words (flutter, dart, test, main)
-     - Not start with a number or special character
-   - If validation fails, ask again with guidance
-
-2. "Describe your app in one sentence. What does it do?"
-   - Wait for description
-
-3. "What's the main problem it solves?"
-   - Wait for problem description
-
-4. "Who are your target users?"
-   - Wait for user description
-
-5. "What are the 3-5 key features?"
-   - Wait for feature list (or infer from description)
-
-That's it! No more questions needed.
+Wait for their response before proceeding.
 
 ---
 
-## Step 3: Generate Product Specs
+## Step 3: Ask Clarifying Questions
+
+After receiving their input, use the AskUserQuestion tool to ask targeted questions covering all three areas. Ask questions one or two at a time, conversationally, with follow-ups as needed.
+
+### Product Overview Questions
+
+Shape the core product definition:
+
+- The product name - A clear, concise name for the product
+- The core product description (1-3 sentences that capture the essence)
+- The key problems the product solves (1-5 specific pain points)
+- How the product solves each problem (concrete solutions)
+- The main features that make this possible
+
+**Important:** If the user hasn't already provided a product name, ask them:
+
+- "What would you like to call this product? (A short, memorable name)"
+
+Example questions (adapt based on their input):
+
+- "Who is the primary user of this product? Can you describe them?"
+- "What's the single biggest pain point you're addressing?"
+- "How do people currently solve this problem without your product?"
+- "What makes your approach different or better?"
+- "What are the 3-5 most essential features?"
+
+### Roadmap Questions
+
+Identify the main areas/sections of the product:
+
+- "What are the main areas or screens of this product? (e.g., Dashboard, Settings, Invoices)"
+- "What would you consider the most critical area to build first?"
+- "Are there any areas that should be separate from the core functionality?"
+
+### Data Shape Questions
+
+Identify the core entities ("nouns") of the product:
+
+- "What are the main 'things' users will create, view, or manage in this product? (e.g., Projects, Invoices, Clients)"
+- "How do these things relate to each other?"
+
+The goal is to gather enough information for all three files before proceeding. Don't need exhaustive detail on every entity — just the core nouns and their relationships.
+
+## Step 4: Generate Product Specs
 
 **Immediately create** all spec files with smart defaults.
 
@@ -245,24 +271,53 @@ Entities used by 3 or more features should be marked as shared.
 
 ---
 
-## Step 4: Design System Research & Generation
+### 4.5: Review & Iterate
 
-"Your app structure is ready! Let's set up your design system.
+After generating all specs, present summary to user and ask for confirmation:
 
-I'll analyze your app type and target users to research and recommend theme options."
+```text
+"✅ I've generated your product specs:
 
-Use `/vibeflow:theme` command to research and generate your design system.
+📋 Product Overview: [App name]
+🗺️ Roadmap: [N] features
+📦 Data Shape: [N] entities
+📄 Feature Specs: [N] feature files generated
 
-Would you like to:
-1. "Generate design system now" — Run `/vibeflow:theme`
-2. "Skip for now" — You can run `/vibeflow:theme` later
+Would you like to:"
+```
 
-**If 1:** Run the theme command workflow
-**If 2:** Continue to final summary
+Use AskUserQuestion with options:
+```text
+Options:
+1. "Approve" — Proceed to design system setup
+2. "Edit overview" — Modify product overview
+3. "Edit roadmap" — Add/remove/change features
+4. "Edit data shape" — Modify entities and relationships
+```
+
+- **If Approve:** Proceed to Step 5
+- **If Edit:** Apply changes, regenerate affected files, re-ask confirmation (iterate until satisfied)
 
 ---
 
-## Step 5: Final Summary
+## Step 5: Design System Research & Generation
+
+Use AskUserQuestion to present options:
+
+```text
+Question: "Your app structure is ready! Would you like to set up your design system now?"
+
+Options:
+1. "Generate now" — Analyze app type and generate theme with research-backed recommendations
+2. "Skip for now" — You can run `/vibeflow:theme` later
+```
+
+- **If Generate now:** Run `/vibeflow:theme` command workflow
+- **If Skip for now:** Continue to Step 6 (Final Summary)
+
+---
+
+## Step 6: Final Summary
 
 Present a comprehensive summary:
 
