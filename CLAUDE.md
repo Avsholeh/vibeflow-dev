@@ -770,15 +770,9 @@ Create a new Flutter app with complete specification files.
 4. Optionally generates design system files
 
 **Generated files:**
-```
-specs/
-├── overview.md
-├── roadmap.md
-├── data_shape.md
-└── features/
-    └── [feature_name]/
-        └── spec.md
-```
+- See [File Structure Patterns > Spec Files](#file-structure-patterns) for complete structure
+- `specs/overview.md`, `specs/roadmap.md`, `specs/data_shape.md`
+- `specs/features/[feature_name]/spec.md` for each feature
 
 ---
 
@@ -798,12 +792,10 @@ Set up design system with research-based theme recommendations.
 - **Calm Focus** — Green/Emerald for wellness and productivity
 
 **Generated files:**
-```
-specs/design_system/
-├── design_system.md
-├── colors.json
-└── typography.json
-```
+- See [File Structure Patterns > Spec Files](#file-structure-patterns) for complete structure
+- `specs/design_system/design_system.md`
+- `specs/design_system/colors.json`
+- `specs/design_system/typography.json`
 
 ---
 
@@ -820,20 +812,14 @@ Build a complete feature with sample data, screens, and business logic.
    - **Phase 3:** Business logic (models, repositories, providers)
    - **Phase 4:** Updates feature status to `in_progress`
 
-**Generated files:**
-```
-specs/features/[feature_slug]/
-├── data.json
-└── models.md
+**Model placement:**
+- Shared models (3+ features) → `lib/core/domain/models/`
+- Feature-specific models → `lib/features/[feature_slug]/domain/models/`
 
-lib/features/[feature_slug]/
-├── domain/models/
-├── domain/repositories/
-├── data/datasources/
-├── data/repositories/
-├── providers/
-└── screens/
-```
+**Generated files:**
+- See [File Structure Patterns](#file-structure-patterns) for complete structure
+- Shared models (3+ features) → `lib/core/domain/models/`
+- Feature-specific models → `lib/features/[feature_slug]/domain/models/`
 
 ---
 
