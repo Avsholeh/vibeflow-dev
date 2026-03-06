@@ -223,6 +223,7 @@ Present a comprehensive summary:
 - **Provider setup:** Ensure main.dart has the feature's provider registered — see Provider template in CLAUDE.md
 - **Immediate writing:** Never show drafts — always write files directly
 - **Reference:** All specification formats are in CLAUDE.md
+- **Code quality:** Run `flutter analyze` after feature completion to verify no warnings or errors, iterate until no errors
 
 ---
 
