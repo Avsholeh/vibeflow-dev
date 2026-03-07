@@ -64,7 +64,8 @@ Check `specs/roadmap.md`:
 
 **Required format:**
 - Features section with ## Features heading
-- Each feature has numbered heading (### 1., ### 2., etc.)
+- Module groupings with ### [Module Name] headings (optional but recommended)
+- Each feature has numbered heading (#### 1., #### 2., etc. when under modules, or ### 1., ### 2. when flat)
 - Each feature has metadata fields:
   - ID (F### format)
   - Priority (P0, P1, or P2)
@@ -72,6 +73,7 @@ Check `specs/roadmap.md`:
   - Dependencies (none or F###, F### list)
   - Phase (phase-1, phase-2, etc.)
   - Tags (comma-separated list)
+  - Module (optional, inferred from parent heading)
 
 **Validation checks:**
 - Feature IDs are sequential (F001, F002, F003...)
@@ -79,6 +81,7 @@ Check `specs/roadmap.md`:
 - All dependencies reference valid feature IDs
 - Status values are valid
 - Priority values are valid
+- Module references are consistent (if specified)
 
 **Report:**
 - ✅ Valid — [N] features with valid metadata
@@ -150,10 +153,10 @@ Check if design system files exist:
 
 ## Step 6: Validate Feature Specs
 
-Check each feature directory in `specs/features/`:
+Check each feature directory in `specs/modules/`:
 
 **For each feature:**
-- Check `specs/features/[feature_slug]/` directories
+- Check `specs/modules/[module]/[feature_slug]/` directories
 
 For each feature directory:
 - `spec.md` exists and has required sections (Purpose, User Flows, Screens, States, Interactions, Data Requirements)

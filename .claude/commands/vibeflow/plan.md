@@ -39,10 +39,12 @@ Read `/specs/roadmap.md` and extract all features with their metadata.
 
 **Parse Features:**
 - Extract metadata from list format under each feature heading
-- **Fields:** ID, Priority, Status, Dependencies, Phase, Tags
+- Support both module-grouped (### Module, #### Feature) and flat (### Feature) formats
+- **Fields:** ID, Priority, Status, Dependencies, Phase, Tags, Module (inferred from parent heading or explicit)
 - **Missing metadata:** Use sensible defaults (P1, pending, none, phase-1)
+- **Module inference:** If feature is under ### [Module Name] heading, assign that module to the feature
 
-**Feature path construction:** `[feature_slug]` for all features (flat structure)
+**Feature path construction:** `[module_slug]/[feature_slug]` for module-grouped features
 
 ---
 
@@ -71,6 +73,7 @@ Read the roadmap and extract all features with their metadata:
 - Status (pending, in_progress, done, blocked)
 - Dependencies (array of feature IDs)
 - Phase
+- Module (inferred from parent heading or explicit)
 
 **Filter features based on focus area:**
 - P0 only → `priority === "P0"`
@@ -322,7 +325,7 @@ Ask for feature name, then these questions:
 **2. Generate Feature Spec:**
 
 Create the feature spec file at:
-`/specs/features/[feature_slug]/spec.md`
+`/specs/modules/[module]/[feature_slug]/spec.md`
 
 ```markdown
 # [Feature Name] Spec
@@ -396,7 +399,7 @@ If the feature introduces new entities, update `/specs/data_shape.md`:
 - **Phase:** [phase-X]
 
 **What's Next:**
-1. Review the generated spec at `/specs/features/[feature_slug]/spec.md`
+1. Review the generated spec at `/specs/modules/[module]/[feature_slug]/spec.md`
 2. Run `/vibeflow:feature` to start building
 3. Or run `/vibeflow:plan` to create a new development plan
 

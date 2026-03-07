@@ -260,8 +260,35 @@ Convert feature names to slugs using these rules:
 - "Due Dates & Reminders" → `due_dates_reminders`
 
 **Feature path construction:**
-- **Spec path:** `[feature_slug]` → `specs/features/add_task/`
+- **Spec path:** `[module]/[feature_slug]` → `specs/modules/tasks/add_task/`
 - **Implementation:** Distributed across layers (no feature folders)
+
+---
+
+### Module Inference
+
+Modules are auto-inferred from feature names using these patterns:
+
+| Feature Name Pattern | Inferred Module |
+|---------------------|-----------------|
+| "Task List", "Add Task", "Complete Task" | "tasks" |
+| "User Profile", "User Settings" | "user" |
+| "Dashboard", "Home Screen" | "dashboard" |
+| "Authentication", "Login", "Register" | "auth" |
+| "Settings", "Preferences" | "settings" |
+| "Notifications", "Alerts" | "notifications" |
+
+**Module Slug Conversion:**
+- Lowercase everything
+- Remove plural 's' if present
+- Replace spaces with underscore
+- Keep words intact
+
+**Examples:**
+- "Task Management" → `task_management`
+- "User Profile" → `user`
+- "App Settings" → `settings`
+- "Notifications" → `notification`
 
 ---
 
@@ -289,9 +316,9 @@ progress = (spec_complete * 25) +
 **File Checks:**
 
 *Spec Status:*
-- `/specs/features/[feature_slug]/spec.md` exists → Spec complete (+25%)
-- `/specs/features/[feature_slug]/data.json` exists → Sample data (+25%)
-- `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
+- `/specs/modules/[module]/[feature_slug]/spec.md` exists → Spec complete (+25%)
+- `/specs/modules/[module]/[feature_slug]/data.json` exists → Sample data (+25%)
+- `/specs/modules/[module]/[feature_slug]/models.md` exists → Types documented (+10%)
 
 *Implementation Status:*
 - `/lib/domain/entities/` has entity .dart files → Entities defined (+20%)
@@ -324,6 +351,40 @@ progress = (spec_complete * 25) +
 
 ## Specification Formats
 
+### Product Overview Format
+
+```markdown
+# Product Overview
+
+## App Name
+[App Name]
+
+## Description
+[User's description]
+
+## Problems
+- [Main problem from user input]
+
+## Solutions
+- [How the app solves the problem]
+
+## Target Users
+[User's description]
+
+## Key Features
+[Infer from description or use user's list]
+
+### [Module A]
+1. [Feature 1]
+2. [Feature 2]
+3. [Feature 3]
+
+### [Module B]
+1. [Feature 1]
+2. [Feature 2]
+3. [Feature 3]
+```
+
 ### Roadmap Format
 
 ```markdown
@@ -331,7 +392,9 @@ progress = (spec_complete * 25) +
 
 ## Features
 
-### 1. Note List
+### [Module A]
+
+#### 1. Note List
 - **ID:** F001
 - **Priority:** P0
 - **Status:** pending
@@ -341,7 +404,7 @@ progress = (spec_complete * 25) +
 
 The main screen displaying all notes in a scrollable list.
 
-### 2. Create Note
+#### 2. Create Note
 - **ID:** F002
 - **Priority:** P0
 - **Status:** pending
@@ -351,7 +414,9 @@ The main screen displaying all notes in a scrollable list.
 
 Quick note creation screen with title and content.
 
-### 3. Edit Note
+### [Module B]
+
+#### 3. Edit Note
 - **ID:** F003
 - **Priority:** P0
 - **Status:** pending
@@ -697,74 +762,54 @@ specs/
 lib/
 ├── domain/
 │   ├── entities/
-│   │   ├── note.dart
-│   │   ├── user.dart
-│   │   └── transaction.dart
+│   │   └── [entity].dart
 │   ├── repositories/
-│   │   ├── note_repository.dart
-│   │   ├── user_repository.dart
-│   │   └── transaction_repository.dart
+│   │   └── [module]/
+│   │        └── [feature]_repository.dart
 │   └── usecases/
-│       ├── get_notes.dart
-│       ├── create_note.dart
-│       ├── update_note.dart
-│       ├── delete_note.dart
-│       └── search_notes.dart
+│       └── [module]/
+│            └── [feature]_usecase.dart
 ├── data/
 │   ├── models/
-│   │   ├── note_dto.dart
-│   │   └── user_dto.dart
+│   │   └── [model]_dto.dart
 │   ├── repositories/
-│   │   ├── note_repository_impl.dart
-│   │   └── user_repository_impl.dart
+│   │   └── [module]/
+│   │        └── [feature]_repository_impl.dart
 │   └── datasources/
-│       ├── note_local_datasource.dart
-│       ├── note_remote_datasource.dart
-│       └── user_datasource.dart
+│       └── [module]/
+│            ├── [feature]_local_datasource.dart
+│            ├── [feature]_remote_datasource.dart
+│            └── [feature]_datasource.dart
 ├── presentation/
 │   ├── screens/
-│   │   ├── note_list_screen.dart
-│   │   ├── note_list_view.dart
-│   │   ├── note_list_page.dart
-│   │   ├── create_note_screen.dart
-│   │   ├── create_note_view.dart
-│   │   ├── create_note_page.dart
-│   │   ├── edit_note_screen.dart
-│   │   ├── note_details_screen.dart
-│   │   └── settings_screen.dart
+│   │   └── [module]/
+│   │        └── [feature]_screen.dart
 │   ├── widgets/
-│   │   ├── note_card.dart
-│   │   ├── search_bar.dart
-│   │   └── empty_state.dart
+│   │   └── [widget].dart
 │   ├── providers/
-│   │   ├── note_list_provider.dart
-│   │   ├── create_note_provider.dart
-│   │   └── settings_provider.dart
+│   │   └── [provider].dart
 │   └── routes/
 │       └── app_routes.dart
 └── core/
     ├── theme/
     │   └── app_theme.dart
     ├── constants/
-    │   ├── app_colors.dart
-    │   ├── app_strings.dart
-    │   └── app_assets.dart
+    │   └── [constants].dart
     ├── utils/
-    │   ├── date_formatter.dart
-    │   └── validators.dart
+    │   └── [utils].dart
     └── services/
-        ├── navigation_service.dart
-        └── storage_service.dart
+        └── [services].dart
 ```
 
 **Key Principles:**
-- All domain entities in `lib/domain/entities/`
-- Repository interfaces in `lib/domain/repositories/`
-- Repository implementations in `lib/data/repositories/`
-- Use cases in `lib/domain/usecases/` for business logic
-- All screens in `lib/presentation/screens/`
-- Shared widgets in `lib/presentation/widgets/`
-- Providers in `lib/presentation/providers/`
+- All domain entities in `lib/domain/entities/` (flat, no modules)
+- Repository interfaces grouped by module in `lib/domain/repositories/[module]/`
+- Use cases grouped by module in `lib/domain/usecases/[module]/`
+- Repository implementations grouped by module in `lib/data/repositories/[module]/`
+- Data sources grouped by module in `lib/data/datasources/[module]/`
+- Screens grouped by module in `lib/presentation/screens/[module]/`
+- Shared widgets in `lib/presentation/widgets/` (flat, no modules)
+- Providers in `lib/presentation/providers/` (flat, no modules)
 
 ---
 
@@ -908,7 +953,7 @@ Create a new Flutter app with complete specification files.
 
 **Generated files:**
 - `specs/overview.md`, `specs/roadmap.md`, `specs/data_shape.md`
-- `specs/features/[feature_slug]/spec.md` for each feature
+- `specs/modules/[module]/[feature_slug]/spec.md` for each feature
 - `specs/design_system/*` (if theme selected)
 
 ---

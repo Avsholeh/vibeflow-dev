@@ -21,7 +21,8 @@ Read `/specs/roadmap.md` and extract all features.
 
 **Parse Features:**
 - Extract metadata from list format under each feature heading
-- **Fields available:** ID, Priority, Status, Dependencies, Phase, Tags
+- Support both module-grouped (### Module, #### Feature) and flat (### Feature) formats
+- **Fields available:** ID, Priority, Status, Dependencies, Phase, Tags, Module
 - **Missing metadata:** Assign sensible defaults (P1, pending, none, phase-1)
 
 Extract for each feature:
@@ -29,8 +30,9 @@ Extract for each feature:
 - Feature ID (from list or auto-generate as F001, F002...)
 - Priority (P0, P1, P2 or default P1)
 - Phase (from list or default "phase-1")
+- Module (inferred from parent heading or explicit)
 
-**Feature path construction:** `[feature_slug]` for all features
+**Feature path construction:** `[module_slug]/[feature_slug]` for module-grouped features
 
 ---
 
@@ -38,17 +40,17 @@ Extract for each feature:
 
 For each feature, check the following paths:
 
-**Feature path construction:** `[feature_slug]`
+**Feature path construction:** `[module_slug]/[feature_slug]` for module-grouped features
 
 **Spec Status:**
-- `/specs/features/[feature_slug]/spec.md` exists → Spec complete (+25%)
-- `/specs/features/[feature_slug]/data.json` exists → Sample data (+25%)
-- `/specs/features/[feature_slug]/models.md` exists → Types documented (+10%)
+- `/specs/modules/[module]/[feature_slug]/spec.md` exists → Spec complete (+25%)
+- `/specs/modules/[module]/[feature_slug]/data.json` exists → Sample data (+25%)
+- `/specs/modules/[module]/[feature_slug]/models.md` exists → Types documented (+10%)
 
 **Implementation Status:**
 - `/lib/domain/entities/` has entity .dart files → Entities defined (+20%)
-- `/lib/domain/usecases/` has use case .dart files → Use cases implemented (+15%)
-- `/lib/presentation/screens/` has screen .dart files → Screens implemented (+10%)
+- `/lib/domain/usecases/[module]/` has use case .dart files → Use cases implemented (+15%)
+- `/lib/presentation/screens/[module]/` has screen .dart files → Screens implemented (+10%)
 
 **Feature slug conversion:**
 - Feature slug: lowercase, spaces → underscore (e.g., "Add Task" → `add_task`)
@@ -159,7 +161,7 @@ Would you like details on any specific feature, or help with the next implementa
 ## Edge Cases
 
 **Missing feature path directory:**
-- If `/specs/features/[feature_slug]/` doesn't exist → 0% progress, treat as not started
+- If `/specs/modules/[module]/[feature_slug]/` doesn't exist → 0% progress, treat as not started
 
 **Missing metadata:**
 - If some fields are missing from the feature list → Use sensible defaults (P1, pending, none, phase-1)

@@ -91,7 +91,7 @@ Update `specs/roadmap.md` to mark the feature as `in_progress`:
 
 Generate sample data files for the selected feature:
 
-**Feature path construction:** `[feature_slug]` → `specs/features/add_task/`
+**Feature path construction:** `[module]/[feature_slug]` → `specs/modules/tasks/add_task/`
 
 - Read feature spec from the path above
 - Create `data.json` in the feature path
@@ -124,8 +124,8 @@ Then create screen widgets:
 - Read feature spec and sample data
 - Use flutter-ui-design skill for UI implementation
 
-**Screen paths (Clean Architecture):**
-- Screen widgets in `lib/presentation/screens/`
+**Screen paths (Clean Architecture with Modules):**
+- Screen widgets in `lib/presentation/screens/[module]/`
 - View wrappers using sample data
 - Page wrappers for production
 
@@ -134,13 +134,13 @@ Then create screen widgets:
 Create business logic following Clean Architecture:
 
 **Domain Layer:**
-- Domain entities in `lib/domain/entities/` (all entities go here, no feature folders)
-- Repository interfaces in `lib/domain/repositories/`
-- Use cases in `lib/domain/usecases/` (business logic operations)
+- Domain entities in `lib/domain/entities/` (flat, no feature folders)
+- Repository interfaces in `lib/domain/repositories/[module]/`
+- Use cases in `lib/domain/usecases/[module]/` (business logic operations)
 
 **Data Layer:**
-- Repository implementations in `lib/data/repositories/`
-- Data sources in `lib/data/datasources/`
+- Repository implementations in `lib/data/repositories/[module]/`
+- Data sources in `lib/data/datasources/[module]/`
 - DTOs in `lib/data/models/` (for data transfer)
 
 **Presentation Layer:**
@@ -210,11 +210,11 @@ After generating screens, update the app routing:
 
 ```dart
 import 'package:flutter/material.dart';
-import '../screens/[feature]_screen.dart';
+import '../screens/[module]/[feature]_screen.dart';
 // ... other screen imports
 
 class AppRoutes {
-  static const String [FEATURE_ROUTE] = '/[feature]';
+  static const String [FEATURE_ROUTE] = '/[module]/[feature]';
   // Add other routes
 
   static Map<String, WidgetBuilder> getRoutes() {
@@ -283,24 +283,24 @@ Present a comprehensive summary:
 **Generated Files:**
 
 **Spec & Data:**
-- `specs/features/[feature_slug]/spec.md`
-- `specs/features/[feature_slug]/data.json`
-- `specs/features/[feature_slug]/models.md`
+- `specs/modules/[module]/[feature_slug]/spec.md`
+- `specs/modules/[module]/[feature_slug]/data.json`
+- `specs/modules/[module]/[feature_slug]/models.md`
 
-**Implementation (Clean Architecture):**
+**Implementation (Clean Architecture with Modules):**
 
 **Domain Layer:**
 - `lib/domain/entities/` — Domain entities (if new)
-- `lib/domain/repositories/` — Repository interfaces
-- `lib/domain/usecases/` — Business logic use cases
+- `lib/domain/repositories/[module]/` — Repository interfaces
+- `lib/domain/usecases/[module]/` — Business logic use cases
 
 **Data Layer:**
-- `lib/data/repositories/` — Repository implementations
-- `lib/data/datasources/` — Data sources
+- `lib/data/repositories/[module]/` — Repository implementations
+- `lib/data/datasources/[module]/` — Data sources
 - `lib/data/models/` — DTOs (if needed)
 
 **Presentation Layer:**
-- `lib/presentation/screens/` — UI screens
+- `lib/presentation/screens/[module]/` — UI screens
 - `lib/presentation/widgets/` — Shared widgets (if any)
 - `lib/presentation/providers/` — State providers
 
@@ -405,9 +405,9 @@ Convert feature names to slugs using these rules:
 A feature is considered complete when all of the following are met:
 
 ### Spec & Data (50%)
-- [ ] `specs/features/[feature_slug]/spec.md` exists with complete feature description
-- [ ] `specs/features/[feature_slug]/data.json` exists with realistic sample data
-- [ ] `specs/features/[feature_slug]/models.md` exists with Dart model definitions
+- [ ] `specs/modules/[module]/[feature_slug]/spec.md` exists with complete feature description
+- [ ] `specs/modules/[module]/[feature_slug]/data.json` exists with realistic sample data
+- [ ] `specs/modules/[module]/[feature_slug]/models.md` exists with Dart model definitions
 
 ### Domain Layer (20%)
 - [ ] Domain entity classes exist in `lib/domain/entities/`

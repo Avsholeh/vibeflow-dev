@@ -111,16 +111,28 @@ Create `specs/overview.md` with:
 ## Key Features
 [Infer from description or use user's list]
 
+### [Module A]
+1. [Feature 1]
+2. [Feature 2]
+3. [Feature 3]
+
+### [Module B]
 1. [Feature 1]
 2. [Feature 2]
 3. [Feature 3]
 ```
 
+**Module Inference for Key Features:**
+- Group related features under common module headings
+- Use module inference rules from CLAUDE.md
+- If only 1-2 features per module, consider merging modules
+- Aim for 2-5 modules total for most apps
+
 ---
 
 ### 4.2: Roadmap
 
-**Immediately create** `specs/roadmap.md` with simple format:
+**Immediately create** `specs/roadmap.md` with module-grouped format:
 
 **Infer features from:**
 - User's feature list (if provided)
@@ -128,13 +140,19 @@ Create `specs/overview.md` with:
 - App description (extract verbs/nouns)
 - Mobile app patterns (auth, dashboard, lists, forms, settings)
 
+**Infer modules from:**
+- Feature name patterns (see CLAUDE.md Module Inference)
+- Common feature groupings
+- User's implied structure
 
 ```markdown
 # Product Roadmap
 
 ## Features
 
-### 1. [Core Feature 1]
+### [Module A]
+
+#### 1. [Core Feature 1]
 - **ID:** F001
 - **Priority:** P0
 - **Status:** pending
@@ -144,7 +162,7 @@ Create `specs/overview.md` with:
 
 [Description...]
 
-### 2. [Core Feature 2]
+#### 2. [Core Feature 2]
 - **ID:** F002
 - **Priority:** P0
 - **Status:** pending
@@ -154,7 +172,9 @@ Create `specs/overview.md` with:
 
 [Description...]
 
-### 3. [Supporting Feature]
+### [Module B]
+
+#### 3. [Supporting Feature]
 - **ID:** F003
 - **Priority:** P1
 - **Status:** pending
@@ -221,9 +241,13 @@ Create `specs/overview.md` with:
 
 ### 4.4: Feature Specs
 
-**Automatically create** `specs/features/[feature_slug]/spec.md` for each roadmap item:
+**Automatically create** `specs/modules/[module]/[feature_slug]/spec.md` for each roadmap item:
 
-**Feature path construction:** `[feature_slug]` → `specs/features/add_task/`
+**Module path construction:**
+1. Infer module from feature name (see CLAUDE.md Module Inference)
+2. Convert module to slug
+3. Convert feature name to slug
+4. Path: `specs/modules/[module_slug]/[feature_slug]/`
 
 ```markdown
 # [Feature Name] Spec
@@ -384,7 +408,7 @@ Present a comprehensive summary:
 - `specs/overview.md` — Product vision
 - `specs/roadmap.md` — Feature roadmap with metadata
 - `specs/data_shape.md` — Data entities
-- `specs/features/*/spec.md` — [N] feature specifications
+- `specs/modules/[module]/*/spec.md` — [N] feature specifications
 - `specs/design_system/*` — Design tokens (if theme selected)
 - `lib/main.dart` — App entry point with Provider setup
 
