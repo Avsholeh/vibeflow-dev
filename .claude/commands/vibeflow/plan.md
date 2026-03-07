@@ -53,9 +53,9 @@ Ask the user for planning focus using `AskUserQuestion`:
 **Question: Development Focus**
 "What should be the focus of this development plan?"
 Options:
+- "All pending features" — Balanced approach
 - "P0 features only" — Critical path to MVP
 - "Specific phase" — Then ask which phase
-- "All pending features" — Balanced approach
 - "Continue in-progress" — Finish what's started
 
 ---
